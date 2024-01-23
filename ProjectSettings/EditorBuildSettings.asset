@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: "Assets/Scenes/sc\xE8ne tablette/Menu.unity"
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: "Assets/Scenes/sc\xE8ne tablette/Scene_attente.unity"
+    guid: 1974763183ffbbb4a94095c99ce93c8f
+  - enabled: 1
+    path: "Assets/Scenes/sc\xE8ne tablette/presentation.unity"
+    guid: cdeb1fff89a99914d912c189f37370ea
+  - enabled: 1
+    path: "Assets/Scenes/sc\xE8ne tablette/Scene_Select_role.unity"
+    guid: f4c68493826b2d748af0c26a9193ba88
+  - enabled: 1
+    path: "Assets/Scenes/sc\xE8ne tablette/Scene_choix_chef.unity"
+    guid: ee68fe27408cd9b43b23082bb18417e3
+  - enabled: 1
+    path: "Assets/Scenes/sc\xE8ne tablette/scene_game_chef.unity"
+    guid: e47fa1ffa051f4049a0fa2ce3e3e6bf4
+  m_configObjects: {}
