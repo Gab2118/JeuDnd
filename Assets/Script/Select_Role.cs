@@ -8,6 +8,7 @@ public class RandomWordDisplay : MonoBehaviour
     public TMP_Text text_role; // Reference to the text_role TMP_Text
     public string mot_selectionner { get; private set; }
 
+
     public string joueurUn = "";
     public string joueurDeux = "";
     public string joueurTrois = "";
@@ -15,12 +16,17 @@ public class RandomWordDisplay : MonoBehaviour
     public string joueurCinq = "";
     public string joueurSix = "";
 
+    public List<string> PlayerNames { get; private set; }
     // liste des nom de classe
     private string[] wordBank = { "Asssassin", "Rôdeur", "Barbare", "Moine", "Barde", "Occultiste", "Sorcière", "Paladin", "Guerrier", "Clerc", "Nécromancien" };
+
+    private string[] roleBank = { "Aventurier", "Cultiste", "l'élu", "Le tyran" };
 
 
     private void Start()
     {
+        PlayerNames = new List<string>();
+        DontDestroyOnLoad(this);
         // Appelez la fonction SlowDownWords après 5 secondes.
         Invoke("AssignRandomWordsToPlayers", 5.0f);
 
@@ -44,6 +50,13 @@ public class RandomWordDisplay : MonoBehaviour
         joueurCinq = GetRandomWord(availableWords);
         joueurSix = GetRandomWord(availableWords);
 
+        // Ajoute les noms des joueurs à la liste
+        PlayerNames.Add(joueurUn);
+        PlayerNames.Add(joueurDeux);
+        PlayerNames.Add(joueurTrois);
+        PlayerNames.Add(joueurQuatre);
+        PlayerNames.Add(joueurCinq);
+        PlayerNames.Add(joueurSix);
         // Affichez les mots sélectionnés pour chaque joueur dans la console
         Debug.Log("Joueur Un : " + joueurUn);
         Debug.Log("Joueur Deux : " + joueurDeux);
