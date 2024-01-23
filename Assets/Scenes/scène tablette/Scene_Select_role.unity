@@ -819,7 +819,7 @@ GameObject:
   - component: {fileID: 1447108142}
   - component: {fileID: 1447108141}
   m_Layer: 0
-  m_Name: "Select_r\xF4le"
+  m_Name: Game Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -837,7 +837,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5eaa21edd01ae44eacabebe54474340, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wordText: {fileID: 1461064802}
+  text_role: {fileID: 1461064802}
+  joueurUn: 
+  joueurDeux: 
+  joueurTrois: 
+  joueurQuatre: 
+  joueurCinq: 
+  joueurSix: 
 --- !u!4 &1447108142
 Transform:
   m_ObjectHideFlags: 0
@@ -910,7 +916,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Sorcier
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b0320bb368295843b94cec058adb3d9, type: 2}
   m_sharedMaterial: {fileID: 1495531635933207064, guid: 2b0320bb368295843b94cec058adb3d9, type: 2}

@@ -1,69 +1,85 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System.Collections.Generic;
 
 public class RandomWordDisplay : MonoBehaviour
 {
-    public TMP_Text wordText;
+    public TMP_Text text_role; // Reference to the text_role TMP_Text
     public string mot_selectionner { get; private set; }
 
-    private string[] wordBank = { "Voleur", "Rôdeur", "Cultiste", "Moine", "Barde", "Occultiste", "Sorcière", "Paladin", "Guerrier", "Clerc", "Nécromancien" };
-    private int currentIndex = 0;
-    private float changeInterval = 0.1f; // Intervalle de changement initial en secondes
-    private float timer = 0.0f;
-    private bool slowingDown = false;
+    public string joueurUn = "";
+    public string joueurDeux = "";
+    public string joueurTrois = "";
+    public string joueurQuatre = "";
+    public string joueurCinq = "";
+    public string joueurSix = "";
+
+    // liste des nom de classe
+    private string[] wordBank = { "Asssassin", "Rôdeur", "Barbare", "Moine", "Barde", "Occultiste", "Sorcière", "Paladin", "Guerrier", "Clerc", "Nécromancien" };
+
 
     private void Start()
     {
-        // Affichez un mot aléatoire au début.
-        ShowRandomWord();
         // Appelez la fonction SlowDownWords après 5 secondes.
-        Invoke("SlowDownWords", 5.0f);
+        Invoke("AssignRandomWordsToPlayers", 5.0f);
+
     }
 
     private void Update()
     {
-        // Incrémentez le compteur de temps.
-        timer += Time.deltaTime;
+        // You can add any periodic updates here, if necessary.
+    }
 
-        // Si le temps écoulé atteint l'intervalle de changement, changez le mot.
-        if (timer >= changeInterval)
+    private void AssignRandomWordsToPlayers()
+    {
+        List<string> availableWords = new List<string>(wordBank);
+        // Assignez un mot aléatoire à chaque VARIABLE joueur
+        joueurUn = GetRandomWord(availableWords);
+        UpdatePlayerRoleText(); // Update the text_role to match joueurUn
+
+        joueurDeux = GetRandomWord(availableWords);
+        joueurTrois = GetRandomWord(availableWords);
+        joueurQuatre = GetRandomWord(availableWords);
+        joueurCinq = GetRandomWord(availableWords);
+        joueurSix = GetRandomWord(availableWords);
+
+        // Affichez les mots sélectionnés pour chaque joueur dans la console
+        Debug.Log("Joueur Un : " + joueurUn);
+        Debug.Log("Joueur Deux : " + joueurDeux);
+        Debug.Log("Joueur Trois : " + joueurTrois);
+        Debug.Log("Joueur Quatre : " + joueurQuatre);
+        Debug.Log("Joueur Cinq : " + joueurCinq);
+        Debug.Log("Joueur Six : " + joueurSix);
+
+        ChangerVersSceneChoixChef();
+    }
+
+    private void UpdatePlayerRoleText()
+    {
+        // Ensure text_role is not null before trying to set its text property
+        if (text_role != null)
         {
-            ShowRandomWord();
-            timer = 0.0f; // Réinitialisez le compteur de temps.
+            text_role.text = joueurUn; // Set the text_role text to the value of joueurUn
         }
     }
 
-    private void ShowRandomWord()
+    private string GetRandomWord(List<string> words)
     {
-        // Choisissez un mot aléatoire dans la banque.
-        int randomIndex = Random.Range(0, wordBank.Length);
-        string randomWord = wordBank[randomIndex];
-
-        // Affichez le mot aléatoire.
-        wordText.text = randomWord;
+        // Retourne un mot aléatoire de la liste et le retire
+        int randomIndex = Random.Range(0, words.Count);
+        string selectedWord = words[randomIndex];
+        words.RemoveAt(randomIndex);
+        return selectedWord;
     }
-
-    private void SlowDownWords()
-    {
-        // Arrêtez de changer les mots après 5 secondes.
-        changeInterval = float.MaxValue;
-
-        // Obtenez le mot actuellement affiché.
-        string displayedWord = wordText.text;
-
-        // Ajoutez le statut "mot_selectionne" au mot.
-        mot_selectionner = "Le role sélectionné est " + displayedWord;
-
-        // Affichez le contenu de "mot_selectionner" dans la console.
-        Debug.Log("Contenu de mot_selectionner : " + mot_selectionner);
-
-        // Attendez 5 secondes avant de changer de scène vers "Scene_choix_chef".
-        Invoke("ChangerVersSceneChoixChef", 5.0f);
-    }
-
     private void ChangerVersSceneChoixChef()
     {
+        // Appelle la méthode "ChargerSceneChoixChef" après un délai de 5 secondes.
+        Invoke("ChargerSceneChoixChef", 5f);
+    }
+    private void ChargerSceneChoixChef()
+    {
+
         // Chargez la scène "Scene_choix_chef".
         SceneManager.LoadScene("Scene_choix_chef");
     }

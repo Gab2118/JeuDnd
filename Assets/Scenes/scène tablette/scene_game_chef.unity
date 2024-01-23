@@ -2559,7 +2559,8 @@ MonoBehaviour:
   - {fileID: 256861672}
   - {fileID: 938674925}
   - {fileID: 1090975886}
-  counterText: {fileID: 1183649853}
+  decompte: {fileID: 1183649853}
+  Bouton_choix_finit: {fileID: 130594638}
 --- !u!4 &1349650830
 Transform:
   m_ObjectHideFlags: 0
