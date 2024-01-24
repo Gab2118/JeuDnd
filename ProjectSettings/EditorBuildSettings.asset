@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: "Assets/Scenes/sc\xE8ne tablette/presentation.unity"
     guid: cdeb1fff89a99914d912c189f37370ea
   - enabled: 1
-    path: "Assets/Scenes/sc\xE8ne tablette/Scene_Select_role.unity"
+    path: "Assets/Scenes/sc\xE8ne tablette/Scene_Select_classe.unity"
     guid: f4c68493826b2d748af0c26a9193ba88
   - enabled: 1
     path: "Assets/Scenes/sc\xE8ne tablette/Scene_choix_chef.unity"

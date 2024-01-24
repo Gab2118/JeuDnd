@@ -19,22 +19,22 @@ public class RandomWordDisplay : MonoBehaviour
     public List<string> PlayerNames { get; private set; }
     // liste des nom de classe
     private string[] wordBank = { "Asssassin", "Rôdeur", "Barbare", "Moine", "Barde", "Occultiste", "Sorcière", "Paladin", "Guerrier", "Clerc", "Nécromancien" };
+    // Liste des roles 
 
-    private string[] roleBank = { "Aventurier", "Cultiste", "l'élu", "Le tyran" };
+
 
 
     private void Start()
     {
         PlayerNames = new List<string>();
         DontDestroyOnLoad(this);
-        // Appelez la fonction SlowDownWords après 5 secondes.
         Invoke("AssignRandomWordsToPlayers", 5.0f);
 
     }
 
     private void Update()
     {
-        // You can add any periodic updates here, if necessary.
+     // enlever a la fin si inutilisé
     }
 
     private void AssignRandomWordsToPlayers()
@@ -42,7 +42,7 @@ public class RandomWordDisplay : MonoBehaviour
         List<string> availableWords = new List<string>(wordBank);
         // Assignez un mot aléatoire à chaque VARIABLE joueur
         joueurUn = GetRandomWord(availableWords);
-        UpdatePlayerRoleText(); // Update the text_role to match joueurUn
+        UpdatePlayerRoleText();
 
         joueurDeux = GetRandomWord(availableWords);
         joueurTrois = GetRandomWord(availableWords);
@@ -70,10 +70,10 @@ public class RandomWordDisplay : MonoBehaviour
 
     private void UpdatePlayerRoleText()
     {
-        // Ensure text_role is not null before trying to set its text property
+       
         if (text_role != null)
         {
-            text_role.text = joueurUn; // Set the text_role text to the value of joueurUn
+            text_role.text = joueurUn; 
         }
     }
 
@@ -87,13 +87,14 @@ public class RandomWordDisplay : MonoBehaviour
     }
     private void ChangerVersSceneChoixChef()
     {
-        // Appelle la méthode "ChargerSceneChoixChef" après un délai de 5 secondes.
         Invoke("ChargerSceneChoixChef", 5f);
     }
     private void ChargerSceneChoixChef()
     {
 
-        // Chargez la scène "Scene_choix_chef".
+
         SceneManager.LoadScene("Scene_choix_chef");
     }
+
+ 
 }

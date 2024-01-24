@@ -158,7 +158,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00005722, y: -375}
+  m_AnchoredPosition: {x: -0.000061035, y: -345}
   m_SizeDelta: {x: 1114.58, y: 259.39}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &304295524
@@ -403,8 +403,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.0000038146973, y: -126}
-  m_SizeDelta: {x: 503.582, y: 50}
+  m_AnchoredPosition: {x: -0.00000047684, y: -163}
+  m_SizeDelta: {x: 646.09, y: 112.86}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1019256717
 MonoBehaviour:
@@ -426,7 +426,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Vous \xEAtes...."
+  m_text: Vos classe sera ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b0320bb368295843b94cec058adb3d9, type: 2}
   m_sharedMaterial: {fileID: 1495531635933207064, guid: 2b0320bb368295843b94cec058adb3d9, type: 2}
@@ -893,8 +893,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 655.396, y: 41.18}
+  m_AnchoredPosition: {x: -0.000061035, y: -57.425}
+  m_SizeDelta: {x: 655.4, y: 114.85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1461064802
 MonoBehaviour:

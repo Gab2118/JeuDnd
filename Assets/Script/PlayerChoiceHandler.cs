@@ -7,7 +7,7 @@ public class PlayerChoiceHandler : MonoBehaviour
 {
     public Button[] buttons;
     public TextMeshProUGUI decompte;
-    public Button Bouton_choix_finit; // Ajout de la référence au bouton Bouton_choix_finit
+    public Button Bouton_choix_finit; 
 
     private int selectionnerBtn = 0;
     private Color32 couleurChangement = new Color32(255, 0, 0, 255);
@@ -26,7 +26,7 @@ public class PlayerChoiceHandler : MonoBehaviour
         }
         UpdateDecompteText();
 
-        Bouton_choix_finit.interactable = false; // Désactivation du bouton Bouton_choix_finit au démarrage
+        Bouton_choix_finit.interactable = false; 
     }
 
     void BoutonCliquer(Button btn)
@@ -48,7 +48,7 @@ public class PlayerChoiceHandler : MonoBehaviour
 
         UpdateDecompteText();
         VerifierEtatBoutons();
-        VerifierBoutonChoixFinit(); // Vérifier l'état du bouton Bouton_choix_finit
+        VerifierBoutonChoixFinit(); 
     }
 
     void VerifierEtatBoutons()
@@ -73,7 +73,7 @@ public class PlayerChoiceHandler : MonoBehaviour
 
     void VerifierBoutonChoixFinit()
     {
-        // Active le bouton Bouton_choix_finit si deux boutons ont été sélectionnés, sinon le désactive
+        
         Bouton_choix_finit.interactable = (selectionnerBtn == 2);
     }
 }
