@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
+// CE SCRIPT À POUR BUT DE GÈRER LE UI ET PERMETTRE AU CHEF DE CHOISIR DEUX JOUEUR À ENVOYEZ EN MISSION
 public class PlayerChoiceHandler : MonoBehaviour
 {
     public Button[] buttons;

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
+// CE SCRIPT EST UTILISER POUR LE CARROUSEL DU GUIDE DES JOUEUR PAR RAPPROT AU ROLE
 public class CarouselControllerCarrousel_role : MonoBehaviour
 {
     public TextMeshProUGUI titleTextRole;
@@ -12,17 +12,17 @@ public class CarouselControllerCarrousel_role : MonoBehaviour
 
     private int currentIndex = 0;
     private string[] titre_role = {
-        "Aventurier",
+        "L'Aventurier",
         "L'Élu",
-        "Le tyran",
-        "Occultis",
+        "Le Tyran",
+        "l'Occultiste",
       
     };
     private string[] descriptions_role = {
-        "Le rôle de l'aventurier est d'aider l'équipe à réussir la quête. ",
-        "L'élu est au courant de qui sont le tyran et l'occuliste, Par contre , attention à nous pas vous dévoiler, ces dernier peuvent vous assassiner.",
-        "Vous devez faire échouer la quête et trouver l'élu afin de l'assasiner",
-        "Vous savez qui est le tyran et l'aider à faire échouer la quête.",
+        "Le rôle de l'aventurier est d'aider l'équipe à réussir la quête de l'artefact.",
+        "L'élu est au courant de l'identité du tyran et de l'occuliste, Par contre , attention à nous pas vous dévoiler, ces dernier peuvent vous assassiner.",
+        "Vous devez faire échouer la quête et trouver l'élu afin de l'assasiner. Un occultiste est cacher mais vous ne savez pas son identité.",
+        "Vous savez qui est le tyran et l'aider à faire échouer la quête.Le tyran ne connait pas votre identité.",
 
     };
 

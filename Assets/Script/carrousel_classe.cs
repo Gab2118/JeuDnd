@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using TMPro; 
 
 
+// CE SCRIPT EST UTILISER POUR LE CARROUSEL DU GUIDE DES JOUEUR PAR RAPPROT AU CLASSE
+
 public class CarouselController : MonoBehaviour
 {
     public TextMeshProUGUI titleText;

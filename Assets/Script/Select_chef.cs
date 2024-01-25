@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
+// cE SCRIPT À POUR BUT DE SÉLECTIONNER LE CHEF PARMIT LES SIX JOUEUR ET LA FONCTION "indexChefPlus" PERMET DE CHANGER LE CHEF POUR LE SUIVANT
 public class Select_chef : MonoBehaviour
 {
     public TMP_Text textField;
@@ -15,11 +17,11 @@ public class Select_chef : MonoBehaviour
     void Start()
     {
 
-        // Trouve l'instance de RandomWordDisplay et récupère la liste des noms des classe
-        RandomWordDisplay randomWordDisplay = FindObjectOfType<RandomWordDisplay>();
-        if (randomWordDisplay != null)
+        // Trouve l'instance de Select_Classe et récupère la liste des noms des classe
+        Select_Classe Select_Classe = FindObjectOfType<Select_Classe>();
+        if (Select_Classe != null)
         {
-            banqueChef = new List<string>(randomWordDisplay.PlayerNames);
+            banqueChef = new List<string>(Select_Classe.PlayerNames);
             foreach (string nom in banqueChef)
             {
                 Debug.Log("Nom du joueur dans banqueChef: " + nom);
@@ -27,7 +29,7 @@ public class Select_chef : MonoBehaviour
         }
         else
         {
-            Debug.LogError("RandomWordDisplay not found!");
+            Debug.LogError("Select_Classe not found!");
         }
         DontDestroyOnLoad(this);
         StartCoroutine(ChangeTextPeriodically());
@@ -44,7 +46,7 @@ public class Select_chef : MonoBehaviour
                 index_chef = Random.Range(0, banqueChef.Count);
                 nom_chef = banqueChef[index_chef]; // Tirer un mot de la banque
                 textField.text = nom_chef; // Assigner nom_chef au mot tirer
-                
+
             }
             else
             {
@@ -55,15 +57,18 @@ public class Select_chef : MonoBehaviour
             iterations++;
         }
 
-        AfficherChef(); 
+        AfficherChef();
     }
 
 
     void AfficherChef()
     {
         Debug.Log("Le chef est : " + nom_chef);
+        ChangerVersSceneChoixChef();
     }
 
+
+    // changer pour le prochain chef
     public void indexChefPlus()
     {
         if (banqueChef != null && banqueChef.Count > 0)
@@ -82,5 +87,22 @@ public class Select_chef : MonoBehaviour
             Debug.LogError("banqueChef is null or empty!");
         }
     }
+
+    public string GetNomChef()
+    {
+        return nom_chef;
+    }
+
+    private void ChangerVersSceneChoixChef()
+    {
+        Invoke("ChargerSceneChoixRole", 5f);
+    }
+    private void ChargerSceneChoixRole()
+    {
+
+
+        SceneManager.LoadScene("Scene_choix_role");
+    }
+
 
 }

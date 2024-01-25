@@ -1,100 +1,69 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using TMPro;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
 
-public class RandomWordDisplay : MonoBehaviour
+// CE SCRIPT À POUR BUT DE SELECTIONNER LES ROLE POUR CHAQUE JOUEUR ET DE LE GARDER EN MÉMOIRE
+public class Select_role : MonoBehaviour
 {
-    public TMP_Text text_role; // Reference to the text_role TMP_Text
-    public string mot_selectionner { get; private set; }
+    public TMP_Text textRole; 
+    private Select_Classe selectClasseScript; // accèder au classe et nom ( joueur_un,joueur_deux,etc)
+    private Select_chef selectChefScript; // To access the chef name
 
+    private string[] RoleBank = { "L'Élu", "Le Tyran", "L'Occultiste", "Aventurier", "Aventurier", "Aventurier" };
+    private List<string> playerRoles; // To store the roles of the players
 
-    public string joueurUn = "";
-    public string joueurDeux = "";
-    public string joueurTrois = "";
-    public string joueurQuatre = "";
-    public string joueurCinq = "";
-    public string joueurSix = "";
-
-    public List<string> PlayerNames { get; private set; }
-    // liste des nom de classe
-    private string[] wordBank = { "Asssassin", "Rôdeur", "Barbare", "Moine", "Barde", "Occultiste", "Sorcière", "Paladin", "Guerrier", "Clerc", "Nécromancien" };
-    // Liste des roles 
-
-
-
-
-    private void Start()
+    void Start()
     {
-        PlayerNames = new List<string>();
-        DontDestroyOnLoad(this);
-        Invoke("AssignRandomWordsToPlayers", 5.0f);
+        selectClasseScript = FindObjectOfType<Select_Classe>();
+        selectChefScript = FindObjectOfType<Select_chef>();
+        playerRoles = new List<string>();
 
-    }
-
-    private void Update()
-    {
-     // enlever a la fin si inutilisé
-    }
-
-    private void AssignRandomWordsToPlayers()
-    {
-        List<string> availableWords = new List<string>(wordBank);
-        // Assignez un mot aléatoire à chaque VARIABLE joueur
-        joueurUn = GetRandomWord(availableWords);
-        UpdatePlayerRoleText();
-
-        joueurDeux = GetRandomWord(availableWords);
-        joueurTrois = GetRandomWord(availableWords);
-        joueurQuatre = GetRandomWord(availableWords);
-        joueurCinq = GetRandomWord(availableWords);
-        joueurSix = GetRandomWord(availableWords);
-
-        // Ajoute les noms des joueurs à la liste
-        PlayerNames.Add(joueurUn);
-        PlayerNames.Add(joueurDeux);
-        PlayerNames.Add(joueurTrois);
-        PlayerNames.Add(joueurQuatre);
-        PlayerNames.Add(joueurCinq);
-        PlayerNames.Add(joueurSix);
-        // Affichez les mots sélectionnés pour chaque joueur dans la console
-        Debug.Log("Joueur Un : " + joueurUn);
-        Debug.Log("Joueur Deux : " + joueurDeux);
-        Debug.Log("Joueur Trois : " + joueurTrois);
-        Debug.Log("Joueur Quatre : " + joueurQuatre);
-        Debug.Log("Joueur Cinq : " + joueurCinq);
-        Debug.Log("Joueur Six : " + joueurSix);
-
-        ChangerVersSceneChoixChef();
-    }
-
-    private void UpdatePlayerRoleText()
-    {
-       
-        if (text_role != null)
+        if (selectClasseScript != null && selectChefScript != null)
         {
-            text_role.text = joueurUn; 
+            StartCoroutine(AssignRolesAndDisplay());
+        }
+        else
+        {
+            Debug.LogError("Required scripts not found!");
         }
     }
 
-    private string GetRandomWord(List<string> words)
+    IEnumerator AssignRolesAndDisplay()
     {
-        // Retourne un mot aléatoire de la liste et le retire
-        int randomIndex = Random.Range(0, words.Count);
-        string selectedWord = words[randomIndex];
-        words.RemoveAt(randomIndex);
-        return selectedWord;
+        yield return new WaitForSeconds(5); 
+
+        List<string> availableRoles = new List<string>(RoleBank);
+        // assigner un role aléatoirement à chaque joueur
+        foreach (string playerName in selectClasseScript.PlayerNames)
+        {
+            string playerRole = GetRandomRole(availableRoles);
+            playerRoles.Add(playerRole);
+        }
+
+      
+        if (textRole != null && playerRoles.Count > 0)
+        {
+            textRole.text = playerRoles[0];
+        }
+
+        // afficher la classe, le role de chaque joueur et préciser si il est le chef
+        for (int i = 0; i < selectClasseScript.PlayerNames.Count; i++)
+        {
+            string playerClass = selectClasseScript.PlayerNames[i];
+            string playerRole = playerRoles[i];
+            string isChef = selectChefScript.GetNomChef() == playerClass ? " est le chef" : "";
+
+            Debug.Log($"Le joueur {i + 1} est {playerClass} + {playerRole} + {isChef}");
+
+        }
     }
-    private void ChangerVersSceneChoixChef()
+
+    private string GetRandomRole(List<string> roles)
     {
-        Invoke("ChargerSceneChoixChef", 5f);
+        int randomIndex = Random.Range(0, roles.Count);
+        string selectedRole = roles[randomIndex];
+        roles.RemoveAt(randomIndex); //verifier que aucun role a été donner 2 fois
+        return selectedRole;
     }
-    private void ChargerSceneChoixChef()
-    {
-
-
-        SceneManager.LoadScene("Scene_choix_chef");
-    }
-
- 
 }
