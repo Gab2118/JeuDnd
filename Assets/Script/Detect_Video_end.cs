@@ -6,7 +6,7 @@ using UnityEngine.Video;
 public class ChangeSceneOnVideoEnd : MonoBehaviour
 {
     public VideoPlayer videoPlayer;
-    public string sceneToLoad = "Scene_Select_role";
+    public string sceneToLoad = "Scene_Select_classe";
     public string sceneOnVideoEnd = "Scene_attente";
 
     private void Start()

@@ -3,13 +3,13 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
-// CE SCRIPT À POUR BUT DE GÈRER LE UI ET PERMETTRE AU CHEF DE CHOISIR DEUX JOUEUR À ENVOYEZ EN MISSION
 public class PlayerChoiceHandler : MonoBehaviour
 {
     public Button[] buttons;
     public TextMeshProUGUI decompte;
-    public Button Bouton_choix_finit; 
+    public Button Bouton_choix_finit;
 
+    private Select_Classe selectClasseScript;
     private int selectionnerBtn = 0;
     private Color32 couleurChangement = new Color32(255, 0, 0, 255);
     private Color32 couleurOriginale;
@@ -17,21 +17,34 @@ public class PlayerChoiceHandler : MonoBehaviour
 
     void Start()
     {
+        selectClasseScript = FindObjectOfType<Select_Classe>();
+        List<string> playerClasses = selectClasseScript.GetPlayerNames();
+
         boutonEtat = new Dictionary<Button, bool>();
         couleurOriginale = buttons[0].GetComponent<Image>().color;
 
-        foreach (Button btn in buttons)
+        for (int i = 0; i < buttons.Length; i++)
         {
-            boutonEtat.Add(btn, false);
-            btn.onClick.AddListener(() => BoutonCliquer(btn));
+            boutonEtat.Add(buttons[i], false);
+            int buttonIndex = i; // Capture l'index actuel de la boucle
+            buttons[i].onClick.AddListener(() => BoutonCliquer(buttonIndex)); // Utilisez buttonIndex ici
+            if (i < playerClasses.Count)
+            {
+                buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = playerClasses[i];
+            }
+            else
+            {
+                buttons[i].gameObject.SetActive(false);
+            }
         }
         UpdateDecompteText();
 
-        Bouton_choix_finit.interactable = false; 
+        Bouton_choix_finit.interactable = false;
     }
 
-    void BoutonCliquer(Button btn)
+    void BoutonCliquer(int buttonIndex)
     {
+        Button btn = buttons[buttonIndex]; // Obtenez le bouton à partir de l'index
         bool estSelectionne = boutonEtat[btn];
 
         if (!estSelectionne && selectionnerBtn < 2)
@@ -49,7 +62,7 @@ public class PlayerChoiceHandler : MonoBehaviour
 
         UpdateDecompteText();
         VerifierEtatBoutons();
-        VerifierBoutonChoixFinit(); 
+        VerifierBoutonChoixFinit();
     }
 
     void VerifierEtatBoutons()
@@ -74,7 +87,6 @@ public class PlayerChoiceHandler : MonoBehaviour
 
     void VerifierBoutonChoixFinit()
     {
-        
         Bouton_choix_finit.interactable = (selectionnerBtn == 2);
     }
 }

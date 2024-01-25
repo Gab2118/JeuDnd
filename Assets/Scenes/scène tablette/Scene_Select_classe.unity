@@ -852,7 +852,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5eaa21edd01ae44eacabebe54474340, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text_role: {fileID: 1461064802}
+  text_class: {fileID: 1461064802}
   joueurUn: 
   joueurDeux: 
   joueurTrois: 

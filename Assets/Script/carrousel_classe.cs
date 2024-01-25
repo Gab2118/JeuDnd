@@ -37,7 +37,7 @@ public class CarouselController : MonoBehaviour
         "Lance un dé 20 (1 jusqu'à 10 il perd le contrôle des zombies et ceux-ci donnent une carte échec, 11 jusqu'à 20 garde le contraire).",
         "On ne sait pas encore.",
         "Empêche le joueur d'activer sa compétence.",
-        "On ne sait pas encore."
+        "En échange de révêler votre identité, annuler le résultat d'une manche de votre choix et cette manche ne sera pas rejouer."
     };
 
     void Start()

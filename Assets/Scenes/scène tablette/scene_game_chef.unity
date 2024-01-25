@@ -739,7 +739,7 @@ GameObject:
   - component: {fileID: 256861673}
   - component: {fileID: 256861672}
   m_Layer: 5
-  m_Name: bouton_choix_Joueur 4
+  m_Name: bouton_choix_Joueur 5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1364,7 +1364,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &358549692
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2739,7 +2739,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &706276277
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2950,7 +2950,7 @@ GameObject:
   - component: {fileID: 938674926}
   - component: {fileID: 938674925}
   m_Layer: 5
-  m_Name: bouton_choix_Joueur 5
+  m_Name: bouton_choix_Joueur 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3107,7 +3107,7 @@ GameObject:
   - component: {fileID: 991848893}
   - component: {fileID: 991848892}
   m_Layer: 5
-  m_Name: bouton_choix_Joueur 3
+  m_Name: bouton_choix_Joueur 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3740,7 +3740,7 @@ GameObject:
   - component: {fileID: 1090975887}
   - component: {fileID: 1090975886}
   m_Layer: 5
-  m_Name: bouton_choix_Joueur 6
+  m_Name: bouton_choix_Joueur 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4087,11 +4087,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 520977545}
-  - {fileID: 1868033304}
   - {fileID: 991848891}
-  - {fileID: 256861671}
   - {fileID: 938674924}
   - {fileID: 1090975885}
+  - {fileID: 256861671}
+  - {fileID: 1868033304}
   m_Father: {fileID: 703371389}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1349650828
@@ -4125,11 +4125,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttons:
   - {fileID: 520977546}
-  - {fileID: 1868033305}
   - {fileID: 991848892}
-  - {fileID: 256861672}
   - {fileID: 938674925}
   - {fileID: 1090975886}
+  - {fileID: 256861672}
+  - {fileID: 1868033305}
   decompte: {fileID: 1183649853}
   Bouton_choix_finit: {fileID: 130594638}
 --- !u!4 &1349650830
@@ -5814,7 +5814,7 @@ GameObject:
   - component: {fileID: 1868033306}
   - component: {fileID: 1868033305}
   m_Layer: 5
-  m_Name: bouton_choix_Joueur 2
+  m_Name: bouton_choix_Joueur 6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -78,6 +78,10 @@ public class Select_Classe : MonoBehaviour
             text_class.text = joueurUn;
         }
     }
+    public List<string> GetPlayerNames()
+    {
+        return PlayerNames;
+    }
 
     private string GetRandomWord(List<string> words)
     {

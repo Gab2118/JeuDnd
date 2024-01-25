@@ -539,7 +539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 643875143}
-  sceneToLoad: Scene_Select_role
+  sceneToLoad: Scene_Select_classe
   sceneOnVideoEnd: Scene_attente
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

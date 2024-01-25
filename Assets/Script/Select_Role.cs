@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 // CE SCRIPT À POUR BUT DE SELECTIONNER LES ROLE POUR CHAQUE JOUEUR ET DE LE GARDER EN MÉMOIRE
 public class Select_role : MonoBehaviour
 {
+
     public TMP_Text textRole; 
     private Select_Classe selectClasseScript; // accèder au classe et nom ( joueur_un,joueur_deux,etc)
     private Select_chef selectChefScript; // To access the chef name
@@ -15,6 +17,7 @@ public class Select_role : MonoBehaviour
 
     void Start()
     {
+        DontDestroyOnLoad(this);
         selectClasseScript = FindObjectOfType<Select_Classe>();
         selectChefScript = FindObjectOfType<Select_chef>();
         playerRoles = new List<string>();
@@ -57,7 +60,9 @@ public class Select_role : MonoBehaviour
             Debug.Log($"Le joueur {i + 1} est {playerClass} + {playerRole} + {isChef}");
 
         }
+        ChangerVersSceneGameChef();
     }
+  
 
     private string GetRandomRole(List<string> roles)
     {
@@ -66,4 +71,16 @@ public class Select_role : MonoBehaviour
         roles.RemoveAt(randomIndex); //verifier que aucun role a été donner 2 fois
         return selectedRole;
     }
+
+    private void ChangerVersSceneGameChef()
+    {
+        Invoke("ChargerSceneGameChef", 5f);
+    }
+    private void ChargerSceneGameChef()
+    {
+
+
+        SceneManager.LoadScene("scene_game_chef");
+    }
+
 }
