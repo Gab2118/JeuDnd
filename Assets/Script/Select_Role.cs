@@ -80,7 +80,7 @@ public class Select_role : MonoBehaviour
     {
 
 
-        SceneManager.LoadScene("scene_game_chef");
+        SceneManager.LoadScene("Scene_turn_TEST");
     }
 
 }
