@@ -166,7 +166,7 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-
+        
     private void LoadEmptyScene()
     {
         SceneManager.LoadScene("scene_vide");
