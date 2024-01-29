@@ -16,8 +16,9 @@ public class TurnManager : MonoBehaviour
 
     public TMP_Text turnText;
     public Button nextTurnButton;
-    public Image classImageDisplay; // Image UI pour afficher l'image de la classe
+    public Image classImageDisplay;
     public List<ClassImage> classImages; // Liste des paires classe-image définies dans l'inspecteur
+    public GameObject panelCompetence;
 
     private Select_Classe selectClasseScript;
     private Select_chef selectChefScript;
@@ -46,7 +47,7 @@ public class TurnManager : MonoBehaviour
 
     private void InitializeClassColors()
     {
-        // Assigner des couleurs au hasard aux classes
+    
         classColors.Add("Assassin", Color.red);
         classColors.Add("Rôdeur", Color.green);
         classColors.Add("Barbare", Color.blue);
@@ -55,8 +56,8 @@ public class TurnManager : MonoBehaviour
         classColors.Add("Occultiste", Color.yellow);
         classColors.Add("Sorcière", Color.grey);
         classColors.Add("Paladin", Color.white);
-        classColors.Add("Guerrier", new Color(0.5f, 0.25f, 0)); // Marron
-        classColors.Add("Clerc", new Color(1f, 0.5f, 0)); // Orange
+        classColors.Add("Guerrier", new Color(0.5f, 0.25f, 0));
+        classColors.Add("Clerc", new Color(1f, 0.5f, 0));
         classColors.Add("Nécromancien", Color.black);
     }
 
@@ -78,7 +79,7 @@ public class TurnManager : MonoBehaviour
         if (currentPlayerIndex == -1)
         {
             Debug.LogError("Le chef n'a pas été trouvé dans la liste des joueurs !");
-            currentPlayerIndex = 0; // Utilisez 0 par défaut si le chef n'est pas trouvé
+            currentPlayerIndex = 0;
         }
     }
 
@@ -98,6 +99,7 @@ public class TurnManager : MonoBehaviour
     {
         if (selectClasseScript.PlayerNames.Count > currentPlayerIndex)
         {
+            panelCompetence.SetActive(true);
             string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
             string colorHex = ColorUtility.ToHtmlStringRGB(classColors.ContainsKey(currentPlayerClass) ? classColors[currentPlayerClass] : Color.white);
             turnText.text = $"C'est le tour du <color=#{colorHex}>{currentPlayerClass}</color>";
