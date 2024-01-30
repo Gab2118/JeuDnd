@@ -4,23 +4,42 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-// CE SCRIPT À POUR BUT DE SELECTIONNER LES ROLE POUR CHAQUE JOUEUR ET DE LE GARDER EN MÉMOIRE
 public class Select_role : MonoBehaviour
 {
+    [System.Serializable]
+    public class Role
+    {
+        public string name;
+        public string description;
 
-    public TMP_Text textRole; 
-    private Select_Classe selectClasseScript; // accèder au classe et nom ( joueur_un,joueur_deux,etc)
-    private Select_chef selectChefScript; // To access the chef name
+        public Role(string name, string description)
+        {
+            this.name = name;
+            this.description = description;
+        }
+    }
 
-    private string[] RoleBank = { "L'Élu", "Le Tyran", "L'Occultiste", "Aventurier", "Aventurier", "Aventurier" };
-    private List<string> playerRoles; // To store the roles of the players
+    public TMP_Text textRole;
+    private Select_Classe selectClasseScript; // Accéder aux classes et noms
+    private Select_chef selectChefScript; // Accéder au nom du chef
+
+    // Bank des rôles avec descriptions
+    private Role[] RoleBank = {
+        new Role("L'Élu", "Vous êtes l'Élu, votre but est fe),"),
+        new Role("Le Tyran", "Description du Tyran..."),
+        new Role("L'Occultiste", "Description de L'Occultiste..."),
+        new Role("Aventurier", "Description de l'Aventurier..."),
+        new Role("Aventurier", "Description de l'Aventurier..."),
+        new Role("Aventurier", "Description de l'Aventurier...")
+    };
+    private List<Role> playerRoles; // Pour stocker les rôles des joueurs
 
     void Start()
     {
         DontDestroyOnLoad(this);
         selectClasseScript = FindObjectOfType<Select_Classe>();
         selectChefScript = FindObjectOfType<Select_chef>();
-        playerRoles = new List<string>();
+        playerRoles = new List<Role>();
 
         if (selectClasseScript != null && selectChefScript != null)
         {
@@ -34,41 +53,39 @@ public class Select_role : MonoBehaviour
 
     IEnumerator AssignRolesAndDisplay()
     {
-        yield return new WaitForSeconds(5); 
+        yield return new WaitForSeconds(5);
 
-        List<string> availableRoles = new List<string>(RoleBank);
-        // assigner un role aléatoirement à chaque joueur
+        List<Role> availableRoles = new List<Role>(RoleBank);
+        // Assigner un rôle aléatoirement à chaque joueur
         foreach (string playerName in selectClasseScript.PlayerNames)
         {
-            string playerRole = GetRandomRole(availableRoles);
+            Role playerRole = GetRandomRole(availableRoles);
             playerRoles.Add(playerRole);
         }
 
-      
+        // Modifier ici pour n'afficher que le nom du rôle
         if (textRole != null && playerRoles.Count > 0)
         {
-            textRole.text = playerRoles[0];
+            textRole.text = playerRoles[0].name;
         }
 
-        // afficher la classe, le role de chaque joueur et préciser si il est le chef
+        // Afficher la classe, le rôle de chaque joueur et préciser si il est le chef
         for (int i = 0; i < selectClasseScript.PlayerNames.Count; i++)
         {
             string playerClass = selectClasseScript.PlayerNames[i];
-            string playerRole = playerRoles[i];
+            Role playerRole = playerRoles[i];
             string isChef = selectChefScript.GetNomChef() == playerClass ? " est le chef" : "";
 
-            Debug.Log($"Le joueur {i + 1} est {playerClass} + {playerRole} + {isChef}");
-
+            Debug.Log($"Le joueur {i + 1} est {playerClass}, {playerRole.name} - {playerRole.description}{isChef}");
         }
         ChangerVersSceneGameChef();
     }
-  
 
-    private string GetRandomRole(List<string> roles)
+    private Role GetRandomRole(List<Role> roles)
     {
         int randomIndex = Random.Range(0, roles.Count);
-        string selectedRole = roles[randomIndex];
-        roles.RemoveAt(randomIndex); //verifier que aucun role a été donner 2 fois
+        Role selectedRole = roles[randomIndex];
+        roles.RemoveAt(randomIndex); // S'assurer qu'aucun rôle n'a été donné 2 fois
         return selectedRole;
     }
 
@@ -76,11 +93,23 @@ public class Select_role : MonoBehaviour
     {
         Invoke("ChargerSceneGameChef", 5f);
     }
+
     private void ChargerSceneGameChef()
     {
-
-
         SceneManager.LoadScene("scene_game_chef");
     }
 
+    // Méthode publique pour obtenir le rôle d'un joueur par index
+    public Role GetPlayerRole(int playerIndex)
+    {
+        if (playerIndex >= 0 && playerIndex < playerRoles.Count)
+        {
+            return playerRoles[playerIndex];
+        }
+        else
+        {
+            Debug.LogError("Index du joueur hors limites!");
+            return null;
+        }
+    }
 }

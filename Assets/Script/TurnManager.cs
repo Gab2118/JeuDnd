@@ -19,10 +19,16 @@ public class TurnManager : MonoBehaviour
         public string className;
         public Sprite classSprite;
     }
+
+    public TMP_Text roleDescriptionText;
+    private Select_role selectRoleScript;
+
     public Button yesButton;
     public Button noButton;
     public TMP_Text turnText;
     public TMP_Text skillNameText; // Texte TMP pour afficher le nom de la compétence
+    public TMP_Text skillDescriptionText;
+ 
     public Button nextTurnButton;
     public Image classImageDisplay;
     public GameObject panelCompetence; // Référence au panneau de compétences
@@ -39,6 +45,7 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
+        selectRoleScript = FindObjectOfType<Select_role>();
         yesButton.onClick.AddListener(OnYesButtonClicked);
         noButton.onClick.AddListener(OnNoButtonClicked);
         selectClasseScript = FindObjectOfType<Select_Classe>();
@@ -87,10 +94,10 @@ public class TurnManager : MonoBehaviour
 
     private void InitializeSkillBank()
     {
-        skillBank.Add("Guerrier", new Skill { skillName = "Leadership", description = "Il peut rejoindre un groupe de mission et ainsi choisir de faire réussir ou échouer la mission." });
+        skillBank.Add("Guerrier", new Skill { skillName = "Leadership", description = "Votre compétences vous permet de rejoindre un groupe de mission et ainsi d'y aller à trois. La majorité l'emporte." });
         skillBank.Add("Barbare", new Skill { skillName = "Rage intégrante", description = "On ne sait pas encore ce qu'il peut faire." });
-        skillBank.Add("Sorcière", new Skill { skillName = "Vision secrète", description = "Peut apercevoir le choix de quelqu'un." });
-        skillBank.Add("Démoniste", new Skill { skillName = "Malédiction sur la vie", description = "Lance une malédiction qui empêche un joueur de partir à la prochaine mission." });
+        skillBank.Add("Sorcière", new Skill { skillName = "Vision secrète", description = "Votre compétence vous permet d'apercevoir le choix de quelqu'un de la mission actuel." });
+        skillBank.Add("Démoniste", new Skill { skillName = "Malédiction sur la vie", description = "Votre compétence vous permet de lancer une malédiction sur un joueur, il ne pourra pas participer" });
         skillBank.Add("Barde", new Skill { skillName = "Musique de la mémoire", description = "Annule le résultat d'une mission." });
         skillBank.Add("Clerc", new Skill { skillName = "Démocratie pur", description = "Donner une bénédiction pour changer le chef de camp du jour même." });
         skillBank.Add("Moine", new Skill { skillName = "Relaxation", description = "Amène une personne méditer avec toi, ce dernier ne peut participer à la mission du jour." });
@@ -129,7 +136,7 @@ public class TurnManager : MonoBehaviour
         {
             string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
             string colorHex = ColorUtility.ToHtmlStringRGB(classColors.ContainsKey(currentPlayerClass) ? classColors[currentPlayerClass] : Color.white);
-            turnText.text = $"C'est le tour du <color=#{colorHex}>{currentPlayerClass}</color>";
+            turnText.text = $"<color=#{colorHex}>{currentPlayerClass}</color>";
 
             if (classImageDictionary.ContainsKey(currentPlayerClass))
             {
@@ -140,24 +147,29 @@ public class TurnManager : MonoBehaviour
                 Debug.LogWarning($"Aucune image trouvée pour la classe {currentPlayerClass}");
             }
 
-            // Vérifier si la compétence a déjà été utilisée pour cette classe
-            if (!skillUsed.ContainsKey(currentPlayerClass) || !skillUsed[currentPlayerClass])
+            // Mettre à jour le texte de la compétence et sa description
+            if (skillBank.ContainsKey(currentPlayerClass))
             {
-                // Si la compétence n'a pas été utilisée, afficher le panneau
+                skillNameText.text = skillBank[currentPlayerClass].skillName;
+                skillDescriptionText.text = skillBank[currentPlayerClass].description; // Mettez à jour le texte de la description de la compétence
                 panelCompetence.SetActive(true);
-                if (skillBank.ContainsKey(currentPlayerClass))
-                {
-                    skillNameText.text = skillBank[currentPlayerClass].skillName;
-                }
-                else
-                {
-                    skillNameText.text = "Compétence inconnue";
-                }
             }
             else
             {
-                // Si la compétence a été utilisée, ne pas afficher le panneau
+                skillNameText.text = "Compétence inconnue";
+                skillDescriptionText.text = ""; // Réinitialiser le texte de la description de la compétence
                 panelCompetence.SetActive(false);
+            }
+
+            // Récupérer la description du rôle du joueur actuel et la mettre à jour
+            Select_role.Role currentPlayerRole = selectRoleScript.GetPlayerRole(currentPlayerIndex);
+            if (currentPlayerRole != null)
+            {
+                roleDescriptionText.text = currentPlayerRole.description;
+            }
+            else
+            {
+                roleDescriptionText.text = "Description du rôle inconnue";
             }
         }
         else
@@ -166,7 +178,7 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-        
+
     private void LoadEmptyScene()
     {
         SceneManager.LoadScene("scene_vide");
