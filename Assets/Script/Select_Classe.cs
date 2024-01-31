@@ -20,7 +20,7 @@ public class Select_Classe : MonoBehaviour
 
     public List<string> PlayerNames { get; private set; }
     // liste des nom de classe
-    private string[] classBank = { "Assassin", "Rôdeur", "Barbare", "Moine", "Barde", "Occultiste", "Sorcière", "Paladin", "Guerrier", "Clerc", "Nécromancien" };
+    private string[] classBank = { "Assassin", "Rôdeur", "Barbare", "Moine", "Barde", "Démoniste", "Sorcière", "Paladin", "Guerrier", "Clerc", "Nécromancien" };
   
 
 

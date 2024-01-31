@@ -26,13 +26,13 @@ public class TurnManager : MonoBehaviour
     public Button yesButton;
     public Button noButton;
     public TMP_Text turnText;
-    public TMP_Text skillNameText; // Texte TMP pour afficher le nom de la compétence
+    public TMP_Text skillNameText; 
     public TMP_Text skillDescriptionText;
  
     public Button nextTurnButton;
     public Image classImageDisplay;
-    public GameObject panelCompetence; // Référence au panneau de compétences
-    public List<ClassImage> classImages; // Liste des paires classe-image définies dans l'inspecteur
+    public GameObject panelCompetence;
+    public List<ClassImage> classImages; // Liste des paires classe-image (voir l'inspecteur)
     private Dictionary<string, bool> skillUsed = new Dictionary<string, bool>(); // Pour stocker si la compétence a été utilisée pour chaque classe
 
     private Select_Classe selectClasseScript;
@@ -121,12 +121,17 @@ public class TurnManager : MonoBehaviour
     private void OnNextTurnButtonClicked()
     {
         currentPlayerIndex = (currentPlayerIndex + 1) % selectClasseScript.PlayerNames.Count;
-        UpdateTurnTextAndImage();
         turnCounter++;
 
         if (turnCounter >= selectClasseScript.PlayerNames.Count)
         {
+            // All players have taken their turn, load the next scene
             LoadEmptyScene();
+        }
+        else
+        {
+            // It's the next player's turn
+            UpdateTurnTextAndImage();
         }
     }
 
