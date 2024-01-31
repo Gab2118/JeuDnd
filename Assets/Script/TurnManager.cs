@@ -47,6 +47,8 @@ public class TurnManager : MonoBehaviour
     private Dictionary<string, Color> classColors = new Dictionary<string, Color>(); // Pour stocker les couleurs des classes
     private Dictionary<string, Skill> skillBank = new Dictionary<string, Skill>(); // Dictionnaire pour stocker les compétences des classes
 
+    private int completeTurnCount = 0; // Pour compter le nombre de tours complets
+
 
 
 
@@ -135,14 +137,19 @@ public class TurnManager : MonoBehaviour
         currentPlayerIndex = (currentPlayerIndex + 1) % selectClasseScript.PlayerNames.Count;
         turnCounter++;
 
+        // Si tous les joueurs ont joué une fois, c'est la fin d'un tour complet
         if (turnCounter >= selectClasseScript.PlayerNames.Count)
         {
-           
-            LoadEmptyScene();
+            turnCounter = 0; // Réinitialiser le compteur de tours pour le prochain tour
+            completeTurnCount++; // Incrémenter le compteur de tours complets
+            Debug.Log($"Tour {completeTurnCount} fini"); // Afficher le message dans la console
+          // LoadEmptyScene(); // Charger la scène suivante
+
+            currentPlayerIndex = 0; // enlever aprés les test
+            UpdateTurnTextAndImage(); // enlever apres les test
         }
         else
         {
- 
             UpdateTurnTextAndImage();
         }
     }
@@ -169,8 +176,17 @@ public class TurnManager : MonoBehaviour
             if (skillBank.ContainsKey(currentPlayerClass))
             {
                 skillNameText.text = skillBank[currentPlayerClass].skillName;
-                skillDescriptionText.text = skillBank[currentPlayerClass].description; // Mettez à jour le texte de la description de la compétence
-                panelCompetence.SetActive(true);
+                skillDescriptionText.text = skillBank[currentPlayerClass].description;
+
+                // Afficher le panel de compétence seulement si la compétence n'a pas encore été utilisée
+                if (!skillUsed.ContainsKey(currentPlayerClass) || !skillUsed[currentPlayerClass])
+                {
+                    panelCompetence.SetActive(true);
+                }
+                else
+                {
+                    panelCompetence.SetActive(false);
+                }
             }
             else
             {
