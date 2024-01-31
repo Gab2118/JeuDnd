@@ -20,28 +20,36 @@ public class TurnManager : MonoBehaviour
         public Sprite classSprite;
     }
 
-    public TMP_Text roleDescriptionText;
-    private Select_role selectRoleScript;
-
+    // panel compétence dans scene_game_chef
+    public GameObject panelCompetence;
     public Button yesButton;
     public Button noButton;
-    public TMP_Text turnText;
-    public TMP_Text skillNameText; 
-    public TMP_Text skillDescriptionText;
- 
-    public Button nextTurnButton;
-    public Image classImageDisplay;
-    public GameObject panelCompetence;
-    public List<ClassImage> classImages; // Liste des paires classe-image (voir l'inspecteur)
-    private Dictionary<string, bool> skillUsed = new Dictionary<string, bool>(); // Pour stocker si la compétence a été utilisée pour chaque classe
+    public TMP_Text skillNameText;
 
+    // panel_jeu_principal
+    public TMP_Text roleDescriptionText;
+    public TMP_Text turnText;
+    public TMP_Text skillDescriptionText;
+    public Image classImageDisplay;
+    public Button nextTurnButton;
+
+    // récupération des données des autres script 
+    private Select_role selectRoleScript;
     private Select_Classe selectClasseScript;
     private Select_chef selectChefScript;
+
+    // autre divers
+    public List<ClassImage> classImages; // Liste des paires classe-image (voir l'inspecteur)
+    private Dictionary<string, bool> skillUsed = new Dictionary<string, bool>(); // Pour stocker si la compétence a été utilisée pour chaque classe
     private int currentPlayerIndex = 0;
     private int turnCounter = 0;
     private Dictionary<string, Sprite> classImageDictionary = new Dictionary<string, Sprite>();
     private Dictionary<string, Color> classColors = new Dictionary<string, Color>(); // Pour stocker les couleurs des classes
     private Dictionary<string, Skill> skillBank = new Dictionary<string, Skill>(); // Dictionnaire pour stocker les compétences des classes
+
+
+
+
 
     void Start()
     {
@@ -92,6 +100,7 @@ public class TurnManager : MonoBehaviour
         }
     }
 
+    // banque de donnée des classes relié à leurs compétences et leurs descriptions
     private void InitializeSkillBank()
     {
         skillBank.Add("Guerrier", new Skill { skillName = "Leadership", description = "Votre compétences vous permet de rejoindre un groupe de mission et ainsi d'y aller à trois. La majorité l'emporte." });
@@ -107,6 +116,8 @@ public class TurnManager : MonoBehaviour
         skillBank.Add("Paladin", new Skill { skillName = "Jet de lumière", description = "En échange de dévoiler son rôle, annule le résultat d'une manche. ON NE REFAIT PAS CETTE MANCHE." });
     }
 
+
+    // Le chef commence en premier
     private void SetStartingPlayerAsChef()
     {
         string chefName = selectChefScript.GetNomChef();
@@ -118,6 +129,7 @@ public class TurnManager : MonoBehaviour
         }
     }
 
+    // vérifier si tout les tour sont fait
     private void OnNextTurnButtonClicked()
     {
         currentPlayerIndex = (currentPlayerIndex + 1) % selectClasseScript.PlayerNames.Count;
@@ -125,16 +137,17 @@ public class TurnManager : MonoBehaviour
 
         if (turnCounter >= selectClasseScript.PlayerNames.Count)
         {
-            // All players have taken their turn, load the next scene
+           
             LoadEmptyScene();
         }
         else
         {
-            // It's the next player's turn
+ 
             UpdateTurnTextAndImage();
         }
     }
 
+    // changer les informations à chaque tour
     private void UpdateTurnTextAndImage()
     {
         if (selectClasseScript.PlayerNames.Count > currentPlayerIndex)
@@ -183,11 +196,13 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-
+    // charger la scène suivante
     private void LoadEmptyScene()
     {
         SceneManager.LoadScene("scene_vide");
     }
+
+    // si le joueur accepte d'utilisé sa compétence
     private void OnYesButtonClicked()
     {
         string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
@@ -195,6 +210,7 @@ public class TurnManager : MonoBehaviour
         skillUsed[currentPlayerClass] = true; // Mettre à jour le statut de la compétence comme utilisée
         panelCompetence.SetActive(false); // Fermer le panneau de compétences
     }
+
 
     private void OnNoButtonClicked()
     {

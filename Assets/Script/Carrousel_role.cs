@@ -11,6 +11,7 @@ public class CarouselControllerCarrousel_role : MonoBehaviour
     public Button rightArrowRole;
 
     private int currentIndex = 0;
+    // Les rôle et leurs description
     private string[] titre_role = {
         "L'Aventurier",
         "L'Élu",
@@ -26,25 +27,28 @@ public class CarouselControllerCarrousel_role : MonoBehaviour
 
     };
 
+    // Écoute de clique des flèches du carrousel
     void Start()
     {
         UpdateUIRole();
         leftArrowRole.onClick.AddListener(PreviousRole);
         rightArrowRole.onClick.AddListener(NextRole);
     }
-
+    // Mettre à jour les informations afficher
     void UpdateUIRole()
     {
         titleTextRole.text = titre_role[currentIndex];
         descriptionTextRole.text = descriptions_role[currentIndex];
     }
 
+    // Aller vers le prochain  role
     public void NextRole()
     {
         currentIndex = (currentIndex + 1) % titre_role.Length;
         UpdateUIRole();
     }
 
+    // Aller au role précédent
     public void PreviousRole()
     {
         currentIndex--;

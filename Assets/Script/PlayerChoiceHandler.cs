@@ -4,16 +4,32 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
+// CE SCRIPT PERMETS AUX CHEF DE CHOISIR 2 JOUEURS À ENVOYEZ EN MISSION
+
 public class PlayerChoiceHandler : MonoBehaviour
 {
+    // groupe des six bouton, un pour chaque joueur ( avec leur nom écrit dedans)
     public Button[] buttons;
+    
+    // nombre de bouton sélectionner
+    private int selectionnerBtn = 0;
+
+    // couleur de visualiser la sélection
+    private Color32 couleurOriginale; // couleur original
+    private Color32 couleurChangement = new Color32(255, 0, 0, 255);
+
+    // text affichant en direct le nombre de joueur sélectionner
     public TextMeshProUGUI decompte;
+
+    // btn pour confirmer le choix
     public Button Bouton_choix_finit;
 
+    // accès au scripts
     private Select_Classe selectClasseScript;
-    private int selectionnerBtn = 0;
-    private Color32 couleurChangement = new Color32(255, 0, 0, 255);
-    private Color32 couleurOriginale;
+
+ 
+  
+ // stocker si il est sélectionner ou non
     private Dictionary<Button, bool> boutonEtat;
     private List<string> joueursSelectionnes; // Liste pour stocker les joueurs sélectionnés
 

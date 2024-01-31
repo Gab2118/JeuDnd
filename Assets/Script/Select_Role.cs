@@ -25,12 +25,12 @@ public class Select_role : MonoBehaviour
 
     // Bank des rôles avec descriptions
     private Role[] RoleBank = {
-        new Role("L'Élu", "Vous êtes l'Élu, votre but est fe),"),
-        new Role("Le Tyran", "Description du Tyran..."),
-        new Role("L'Occultiste", "Description de L'Occultiste..."),
-        new Role("Aventurier", "Description de l'Aventurier..."),
-        new Role("Aventurier", "Description de l'Aventurier..."),
-        new Role("Aventurier", "Description de l'Aventurier...")
+        new Role("L'Élu", "Vous êtes l'élu, vous êtes au courant de l'identité du tyran et de l'occuliste, Par contre , attention à nous pas vous dévoiler, ces dernier peuvent vous assassiner."),
+        new Role("Le Tyran", "Vous êtes le Tyran,vous devez faire échouer la quête et trouver l'élu afin de l'assasiner. Un occultiste vous adorant est cacher mais vous ne savez pas son identité. Soyez prudent"),
+        new Role("L'Occultiste", "Vous êtes l'occultiste, Vous savez qui est le Tyran et devez l'aider à faire échouer la quête.Le Tyran ne connait pas votre identité."),
+        new Role("Aventurier", "Vous êtes un aventurier.Le rôle de l'aventurier est d'aider l'équipe à réussir la quête de l'artefact. Vous ne savez pas qui est l'élu ni l'occultiste ni le tyran. Faite votre possible pour aider l'Élu à réussir les missions."),
+        new Role("Aventurier", "Vous êtes un aventurier.Le rôle de l'aventurier est d'aider l'équipe à réussir la quête de l'artefact. Vous ne savez pas qui est l'élu ni l'occultiste ni le tyran. Faite votre possible pour aider l'Élu à réussir les missions."),
+        new Role("Aventurier", "Vous êtes un aventurier.Le rôle de l'aventurier est d'aider l'équipe à réussir la quête de l'artefact. Vous ne savez pas qui est l'élu ni l'occultiste ni le tyran. Faite votre possible pour aider l'Élu à réussir les missions.")
     };
     private List<Role> playerRoles; // Pour stocker les rôles des joueurs
 
