@@ -1075,7 +1075,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 230538975}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3770477532750066834}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &230538975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1717,7 +1729,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Confirmer votre choix
+  m_text: 0/1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3390,6 +3402,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdf827936461af444bfd35afd004143c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  choiceButtons:
+  - {fileID: 1230647734}
+  - {fileID: 441139332}
+  - {fileID: 1099291399}
+  - {fileID: 2037344679}
+  - {fileID: 894361073}
+  - {fileID: 1514718602}
+  text_confirm: {fileID: 357781040}
+  btn_confirm_choix: {fileID: 230538974}
+  panelCompetenceChoixJoueur: {fileID: 3770477532750066834}
   panelCompetence: {fileID: 2137540715}
   yesButton: {fileID: 2137540719}
   noButton: {fileID: 2137540718}
@@ -5959,6 +5981,7 @@ MonoBehaviour:
   - {fileID: 1868033305}
   decompte: {fileID: 1183649853}
   Bouton_choix_finit: {fileID: 130594638}
+  choiceButtons: []
 --- !u!4 &1349650830
 Transform:
   m_ObjectHideFlags: 0
@@ -9411,7 +9434,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &4483405680018537865
 MonoBehaviour:
   m_ObjectHideFlags: 0

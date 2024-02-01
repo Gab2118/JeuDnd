@@ -6,6 +6,24 @@ using System.Collections.Generic;
 
 public class TurnManager : MonoBehaviour
 {
+
+    // Pour la gestion des couleurs des boutons
+    public Button[] choiceButtons; // Assurez-vous d'assigner vos boutons dans l'inspecteur Unity
+    private Color32 defaultButtonColor = new Color32(190, 190, 190, 255); // Couleur initiale des boutons
+    private Color32 selectedButtonColor = new Color32(255, 0, 0, 255); // Couleur lorsqu'un bouton est sélectionné
+    private Button selectedButton;
+    private int selectedButtonCount = 0;
+    private List<Button> selectedButtons = new List<Button>();
+    public TMP_Text text_confirm;
+    public Button btn_confirm_choix;
+
+
+    public GameObject panelCompetenceChoixJoueur;
+
+
+
+
+
     [System.Serializable]
     public class Skill
     {
@@ -55,6 +73,12 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
+
+        btn_confirm_choix.interactable = false;
+        foreach (var button in choiceButtons)
+        {
+            button.onClick.AddListener(() => OnChoiceButtonClicked(button));
+        }
         selectRoleScript = FindObjectOfType<Select_role>();
         yesButton.onClick.AddListener(OnYesButtonClicked);
         noButton.onClick.AddListener(OnNoButtonClicked);
@@ -225,7 +249,15 @@ public class TurnManager : MonoBehaviour
         Debug.Log(currentPlayerClass + " a utilisé sa compétence.");
         skillUsed[currentPlayerClass] = true; // Mettre à jour le statut de la compétence comme utilisée
         panelCompetence.SetActive(false); // Fermer le panneau de compétences
+
+        // Vérifiez si le joueur actuel est un Assassin
+        if (currentPlayerClass == "Assassin")
+        {
+            // Si c'est le cas, activez le panel Panel_competence_choix_joueur
+            panelCompetenceChoixJoueur.SetActive(true);
+        }
     }
+
 
 
     private void OnNoButtonClicked()
@@ -234,4 +266,47 @@ public class TurnManager : MonoBehaviour
         skillUsed[selectClasseScript.PlayerNames[currentPlayerIndex]] = false; // Mettre à jour le statut de la compétence comme non utilisée
         panelCompetence.SetActive(false); // Fermer le panneau de compétences
     }
+    private void OnChoiceButtonClicked(Button clickedButton)
+    {
+        if (selectedButtons.Contains(clickedButton))
+        {
+            // Désélectionner le bouton
+            clickedButton.image.color = defaultButtonColor;
+            selectedButtons.Remove(clickedButton);
+            selectedButtonCount--;
+        }
+        else if (selectedButtonCount < 2) // Assurez-vous de ne pas sélectionner plus de 2 boutons
+        {
+            // Sélectionner le bouton
+            clickedButton.image.color = selectedButtonColor;
+            selectedButtons.Add(clickedButton);
+            selectedButtonCount++;
+        }
+
+        // Mettre à jour le texte confirm
+        text_confirm.text = $"{selectedButtonCount}/1";
+
+        // Activer ou désactiver le bouton de confirmation
+        btn_confirm_choix.interactable = (selectedButtonCount == 1);
+
+        // Réactiver ou désactiver les autres boutons si nécessaire
+        foreach (var button in choiceButtons)
+        {
+            if (!selectedButtons.Contains(button) && selectedButtonCount < 1)
+            {
+                button.interactable = true; // Réactiver le bouton
+            }
+            else if (!selectedButtons.Contains(button) && selectedButtonCount == 1)
+            {
+                button.interactable = false; // Désactiver le bouton
+            }
+        }
+    }
+    private void UpdateConfirmButtonState()
+    {
+        text_confirm.text = $"{selectedButtonCount}/1";
+        btn_confirm_choix.interactable = (text_confirm.text == "1/1");
+    }
 }
+
+

@@ -66,6 +66,7 @@ public class Select_Classe : MonoBehaviour
         Debug.Log("Joueur Quatre : " + joueurQuatre);
         Debug.Log("Joueur Cinq : " + joueurCinq);
         Debug.Log("Joueur Six : " + joueurSix);
+        
 
         ChangerVersSceneChoixChef();
     }
