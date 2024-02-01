@@ -243,20 +243,20 @@ public class TurnManager : MonoBehaviour
     }
 
     // si le joueur accepte d'utilisé sa compétence
-    private void OnYesButtonClicked()
-    {
-        string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
-        Debug.Log(currentPlayerClass + " a utilisé sa compétence.");
-        skillUsed[currentPlayerClass] = true; // Mettre à jour le statut de la compétence comme utilisée
-        panelCompetence.SetActive(false); // Fermer le panneau de compétences
+  private void OnYesButtonClicked()
+{
+    string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
+    Debug.Log(currentPlayerClass + " a utilisé sa compétence.");
+    skillUsed[currentPlayerClass] = true; // Mettre à jour le statut de la compétence comme utilisée
+    panelCompetence.SetActive(false); // Fermer le panneau de compétences
 
-        // Vérifiez si le joueur actuel est un Assassin
-        if (currentPlayerClass == "Assassin")
-        {
-            // Si c'est le cas, activez le panel Panel_competence_choix_joueur
-            panelCompetenceChoixJoueur.SetActive(true);
-        }
+    // Vérifiez si le joueur actuel est un Assassin
+    if (currentPlayerClass == "Assassin")
+    {
+        // Si c'est le cas, activez le panel Panel_competence_choix_joueur
+        panelCompetenceChoixJoueur.SetActive(true);
     }
+}
 
 
 
