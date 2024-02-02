@@ -71,19 +71,30 @@ public class TurnManager : MonoBehaviour
 
 
 
+
+
+
+
     void Start()
     {
+        selectRoleScript = FindObjectOfType<Select_role>();
+        yesButton.onClick.AddListener(OnYesButtonClicked);
+        noButton.onClick.AddListener(OnNoButtonClicked);
+        selectClasseScript = FindObjectOfType<Select_Classe>();
+        selectChefScript = FindObjectOfType<Select_chef>();
+        for (int i = 0; i < choiceButtons.Length; i++)
+        {
+            // Obtenez le composant TextMeshProUGUI du bouton et définissez-le au nom de classe du joueur
+            TextMeshProUGUI buttonText = choiceButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+            buttonText.text = selectClasseScript.PlayerNames[i];
+        }
 
         btn_confirm_choix.interactable = false;
         foreach (var button in choiceButtons)
         {
             button.onClick.AddListener(() => OnChoiceButtonClicked(button));
         }
-        selectRoleScript = FindObjectOfType<Select_role>();
-        yesButton.onClick.AddListener(OnYesButtonClicked);
-        noButton.onClick.AddListener(OnNoButtonClicked);
-        selectClasseScript = FindObjectOfType<Select_Classe>();
-        selectChefScript = FindObjectOfType<Select_chef>();
+
 
         if (selectClasseScript == null || selectChefScript == null || classImageDisplay == null || panelCompetence == null || skillNameText == null)
         {
@@ -97,6 +108,7 @@ public class TurnManager : MonoBehaviour
         SetStartingPlayerAsChef();
         nextTurnButton.onClick.AddListener(OnNextTurnButtonClicked);
         UpdateTurnTextAndImage();
+        btn_confirm_choix.onClick.AddListener(OnConfirmButtonClicked);
     }
 
 
@@ -167,7 +179,7 @@ public class TurnManager : MonoBehaviour
             turnCounter = 0; // Réinitialiser le compteur de tours pour le prochain tour
             completeTurnCount++; // Incrémenter le compteur de tours complets
             Debug.Log($"Tour {completeTurnCount} fini"); // Afficher le message dans la console
-          // LoadEmptyScene(); // Charger la scène suivante
+                                                         // LoadEmptyScene(); // Charger la scène suivante
 
             currentPlayerIndex = 0; // enlever aprés les test
             UpdateTurnTextAndImage(); // enlever apres les test
@@ -243,20 +255,72 @@ public class TurnManager : MonoBehaviour
     }
 
     // si le joueur accepte d'utilisé sa compétence
-  private void OnYesButtonClicked()
-{
-    string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
-    Debug.Log(currentPlayerClass + " a utilisé sa compétence.");
-    skillUsed[currentPlayerClass] = true; // Mettre à jour le statut de la compétence comme utilisée
-    panelCompetence.SetActive(false); // Fermer le panneau de compétences
-
-    // Vérifiez si le joueur actuel est un Assassin
-    if (currentPlayerClass == "Assassin")
+    private void OnYesButtonClicked()
     {
-        // Si c'est le cas, activez le panel Panel_competence_choix_joueur
-        panelCompetenceChoixJoueur.SetActive(true);
+        string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
+        Debug.Log(currentPlayerClass + " a utilisé sa compétence.");
+        skillUsed[currentPlayerClass] = true; // Mettre à jour le statut de la compétence comme utilisée
+        panelCompetence.SetActive(false); // Fermer le panneau de compétences
+
+        // Si l'assassin accepte t'utiliser sa compétence
+        if (currentPlayerClass == "Assassin")
+        {
+            // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
+            panelCompetenceChoixJoueur.SetActive(true);
+        }
+        if (currentPlayerClass == "Guerrier")
+        {
+
+
+        }
+        if (currentPlayerClass == "Barbare")
+        {
+
+
+        }
+        if (currentPlayerClass == "Sorcière")
+        {
+
+
+        }
+        if (currentPlayerClass == " Démoniste")
+        {
+
+
+        }
+        if (currentPlayerClass == "Barde")
+        {
+
+
+        }
+        if (currentPlayerClass == "Clerc")
+        {
+
+
+        }
+        if (currentPlayerClass == "Moine")
+        {
+
+
+        }
+        if (currentPlayerClass == "Nécromancien")
+        {
+
+
+        }
+        if (currentPlayerClass == "Rôdeur")
+        {
+
+
+        }
+        if (currentPlayerClass == "Paladin")
+        {
+
+
+        }
+
+
     }
-}
 
 
 
@@ -307,6 +371,34 @@ public class TurnManager : MonoBehaviour
         text_confirm.text = $"{selectedButtonCount}/1";
         btn_confirm_choix.interactable = (text_confirm.text == "1/1");
     }
+
+    private void OnConfirmButtonClicked()
+    {
+        if (selectedButtons.Count > 0)
+        {
+            // Récupérer le bouton actuellement sélectionné
+            Button selectedButton = selectedButtons[0];
+
+            // Récupérer le composant TextMeshProUGUI du bouton sélectionné pour obtenir le texte
+            TextMeshProUGUI buttonText = selectedButton.GetComponentInChildren<TextMeshProUGUI>();
+
+            if (buttonText != null)
+            {
+                // Afficher le nom de la classe dans la console
+                Debug.Log("La classe sélectionnée est: " + buttonText.text);
+            }
+            else
+            {
+                Debug.LogError("Le bouton sélectionné n'a pas de composant TextMeshProUGUI.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Aucun bouton n'est sélectionné lors de la confirmation.");
+        }
+    }
+
+
 }
 
 

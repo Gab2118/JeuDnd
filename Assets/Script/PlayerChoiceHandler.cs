@@ -142,9 +142,5 @@ public class PlayerChoiceHandler : MonoBehaviour
     }
 
 
-    // Pour la gestion des couleurs des boutons
-    public Button[] choiceButtons; // Assurez-vous d'assigner vos boutons dans l'inspecteur Unity
-    private Color32 defaultButtonColor = new Color32(255, 255, 255, 255); // Couleur initiale des boutons
-    private Color32 selectedButtonColor = new Color32(255, 0, 0, 255); // Couleur lorsqu'un bouton est sélectionné
-    private Button selectedButton;
+ 
 }
