@@ -7,6 +7,11 @@ using UnityEngine.SceneManagement;
 // cE SCRIPT À POUR BUT DE SÉLECTIONNER LE CHEF PARMIT LES SIX JOUEUR ET LA FONCTION "indexChefPlus" PERMET DE CHANGER LE CHEF POUR LE SUIVANT
 public class Select_chef : MonoBehaviour
 {
+    public void SetNomChef(string nouveauChef)
+    {
+        nom_chef = nouveauChef;
+        // Mise à jour de l'affichage du chef si nécessaire...
+    }
     public TMP_Text textField;
     private List<string> banqueChef; // liste des chef trouver 
 

@@ -20,7 +20,7 @@ public class TurnManager : MonoBehaviour
 
     public GameObject panelCompetenceChoixJoueur;
 
-
+    public Button btnChoixChef;
 
 
 
@@ -67,7 +67,7 @@ public class TurnManager : MonoBehaviour
 
     private int completeTurnCount = 0; // Pour compter le nombre de tours complets
 
-
+  
 
 
 
@@ -77,6 +77,11 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
+        selectChefScript = FindObjectOfType<Select_chef>();
+        if (selectChefScript == null)
+        {
+            Debug.LogError("Select_chef script not found!");
+        }
         selectRoleScript = FindObjectOfType<Select_role>();
         yesButton.onClick.AddListener(OnYesButtonClicked);
         noButton.onClick.AddListener(OnNoButtonClicked);
@@ -179,16 +184,24 @@ public class TurnManager : MonoBehaviour
             turnCounter = 0; // Réinitialiser le compteur de tours pour le prochain tour
             completeTurnCount++; // Incrémenter le compteur de tours complets
             Debug.Log($"Tour {completeTurnCount} fini"); // Afficher le message dans la console
-                                                         // LoadEmptyScene(); // Charger la scène suivante
 
-            currentPlayerIndex = 0; // enlever aprés les test
-            UpdateTurnTextAndImage(); // enlever apres les test
+            // Déterminer et mettre à jour le prochain chef
+            int currentChefIndex = selectClasseScript.PlayerNames.IndexOf(selectChefScript.GetNomChef());
+            int nextChefIndex = (currentChefIndex + 1) % selectClasseScript.PlayerNames.Count;
+            selectChefScript.SetNomChef(selectClasseScript.PlayerNames[nextChefIndex]);
+
+            // Réinitialiser currentPlayerIndex pour que le chef soit le premier joueur du prochain tour
+            currentPlayerIndex = nextChefIndex;
+
+            UpdateTurnTextAndImage(); // Mettre à jour l'affichage pour le prochain tour
         }
         else
         {
             UpdateTurnTextAndImage();
         }
     }
+
+
 
     // changer les informations à chaque tour
     private void UpdateTurnTextAndImage()
@@ -241,12 +254,18 @@ public class TurnManager : MonoBehaviour
             {
                 roleDescriptionText.text = "Description du rôle inconnue";
             }
+
+            // Récupérer le nom du joueur actuel et activer le bouton Btn_choix_chef si le joueur actuel est le chef
+            string currentPlayerName = selectClasseScript.PlayerNames[currentPlayerIndex];
+            btnChoixChef.interactable = (currentPlayerName == selectChefScript.GetNomChef());
         }
         else
         {
             Debug.LogError("Player index is out of range!");
         }
     }
+
+
 
     // charger la scène suivante
     private void LoadEmptyScene()
@@ -268,58 +287,30 @@ public class TurnManager : MonoBehaviour
             // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
         }
-        if (currentPlayerClass == "Guerrier")
-        {
-
-
-        }
-        if (currentPlayerClass == "Barbare")
-        {
-
-
-        }
         if (currentPlayerClass == "Sorcière")
         {
 
-
+            // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
+            panelCompetenceChoixJoueur.SetActive(true);
         }
         if (currentPlayerClass == " Démoniste")
         {
-
-
-        }
-        if (currentPlayerClass == "Barde")
-        {
-
+            // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
+            panelCompetenceChoixJoueur.SetActive(true);
 
         }
         if (currentPlayerClass == "Clerc")
         {
-
+            // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
+            panelCompetenceChoixJoueur.SetActive(true);
 
         }
         if (currentPlayerClass == "Moine")
         {
-
-
-        }
-        if (currentPlayerClass == "Nécromancien")
-        {
-
+            // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
+            panelCompetenceChoixJoueur.SetActive(true);
 
         }
-        if (currentPlayerClass == "Rôdeur")
-        {
-
-
-        }
-        if (currentPlayerClass == "Paladin")
-        {
-
-
-        }
-
-
     }
 
 
@@ -374,27 +365,41 @@ public class TurnManager : MonoBehaviour
 
     private void OnConfirmButtonClicked()
     {
-        if (selectedButtons.Count > 0)
-        {
-            // Récupérer le bouton actuellement sélectionné
-            Button selectedButton = selectedButtons[0];
+        // récupérer le tour du joueur en cour
+        string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
 
-            // Récupérer le composant TextMeshProUGUI du bouton sélectionné pour obtenir le texte
-            TextMeshProUGUI buttonText = selectedButton.GetComponentInChildren<TextMeshProUGUI>();
-
-            if (buttonText != null)
-            {
-                // Afficher le nom de la classe dans la console
-                Debug.Log("La classe sélectionnée est: " + buttonText.text);
-            }
-            else
-            {
-                Debug.LogError("Le bouton sélectionné n'a pas de composant TextMeshProUGUI.");
-            }
-        }
-        else
+        // si tel classes clique sur btn_confirm_choice
+        switch (currentPlayerClass)
         {
-            Debug.LogError("Aucun bouton n'est sélectionné lors de la confirmation.");
+            case "Sorcière":
+                // Implement the logic for Sorcière here
+                Debug.Log("La sorcière aperçoit le choix de quelqu'un");
+                break;
+
+            case "Démoniste":
+                // Implement the logic for Démoniste here
+                Debug.Log("Le démoniste à maudit un joueur");
+                break;
+            case "Clerc":
+                // Implement the logic for Clerc here
+                Debug.Log("La clerc à nommé un nouveau chef");
+                break;
+
+            case "Moine":
+                // Implement the logic for Moine here
+                Debug.Log("Le moine à amener un joueur à méditer");
+                break;
+
+            case "Assassin":
+                // Implement the logic for Assassin here
+                Debug.Log("L'assassin vole la compétence d'un joueur");
+                break;
+
+ 
+                // si aucune classe en cour ne fait partie de cette liste 
+            default:
+                Debug.LogWarning($"Unknown class: {currentPlayerClass}");
+                break;
         }
     }
 
