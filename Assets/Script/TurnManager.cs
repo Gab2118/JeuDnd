@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 public class TurnManager : MonoBehaviour
 {
+    public Button btnUtiliseCompetence; // Assurez-vous d'assigner ce bouton dans l'inspecteur Unity
+    private Dictionary<string, bool> competenceUtiliseePourClasse = new Dictionary<string, bool>();
 
     // Pour la gestion des couleurs des boutons
     public Button[] choiceButtons; // Assurez-vous d'assigner vos boutons dans l'inspecteur Unity
@@ -67,9 +69,10 @@ public class TurnManager : MonoBehaviour
 
     private int completeTurnCount = 0; // Pour compter le nombre de tours complets
 
-  
 
 
+    // déclaration pour les compétence
+    private string classeCibleAssassin;
 
 
 
@@ -221,30 +224,17 @@ public class TurnManager : MonoBehaviour
                 Debug.LogWarning($"Aucune image trouvée pour la classe {currentPlayerClass}");
             }
 
-            // Mettre à jour le texte de la compétence et sa description
             if (skillBank.ContainsKey(currentPlayerClass))
             {
                 skillNameText.text = skillBank[currentPlayerClass].skillName;
                 skillDescriptionText.text = skillBank[currentPlayerClass].description;
-
-                // Afficher le panel de compétence seulement si la compétence n'a pas encore été utilisée
-                if (!skillUsed.ContainsKey(currentPlayerClass) || !skillUsed[currentPlayerClass])
-                {
-                    panelCompetence.SetActive(true);
-                }
-                else
-                {
-                    panelCompetence.SetActive(false);
-                }
             }
             else
             {
                 skillNameText.text = "Compétence inconnue";
                 skillDescriptionText.text = ""; // Réinitialiser le texte de la description de la compétence
-                panelCompetence.SetActive(false);
             }
 
-            // Récupérer la description du rôle du joueur actuel et la mettre à jour
             Select_role.Role currentPlayerRole = selectRoleScript.GetPlayerRole(currentPlayerIndex);
             if (currentPlayerRole != null)
             {
@@ -255,15 +245,46 @@ public class TurnManager : MonoBehaviour
                 roleDescriptionText.text = "Description du rôle inconnue";
             }
 
-            // Récupérer le nom du joueur actuel et activer le bouton Btn_choix_chef si le joueur actuel est le chef
             string currentPlayerName = selectClasseScript.PlayerNames[currentPlayerIndex];
-            btnChoixChef.interactable = (currentPlayerName == selectChefScript.GetNomChef());
+            if (currentPlayerName == selectChefScript.GetNomChef())
+            {
+                btnChoixChef.GetComponentInChildren<TMP_Text>().text = "Faire votre choix";
+                btnChoixChef.interactable = true;
+            }
+            else
+            {
+                btnChoixChef.GetComponentInChildren<TMP_Text>().text = "En attente du chef";
+                btnChoixChef.interactable = false;
+            }
+
+            // Gérer l'activation du bouton Btn_utilise_competence
+            if (currentPlayerClass == classeCibleAssassin)
+            {
+                // Si le joueur actuel est la cible de l'Assassin, désactiver le bouton et changer le texte
+                btnUtiliseCompetence.interactable = false;
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Compétence bloquée par l'assassin";
+            }
+            else if (competenceUtiliseePourClasse.ContainsKey(currentPlayerClass) && competenceUtiliseePourClasse[currentPlayerClass])
+            {
+                // Si la compétence a été utilisée pour la classe en cours, désactiver le bouton et mettre à jour le texte
+                btnUtiliseCompetence.interactable = false;
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Compétence utilisée";
+            }
+            else
+            {
+                // Sinon, activer le bouton et réinitialiser le texte (ou le mettre à ce que vous voulez par défaut)
+                btnUtiliseCompetence.interactable = true;
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Utiliser compétence"; // Mettez ici le texte que vous voulez par défaut
+            }
         }
         else
         {
             Debug.LogError("Player index is out of range!");
         }
     }
+
+
+
 
 
 
@@ -280,6 +301,10 @@ public class TurnManager : MonoBehaviour
         Debug.Log(currentPlayerClass + " a utilisé sa compétence.");
         skillUsed[currentPlayerClass] = true; // Mettre à jour le statut de la compétence comme utilisée
         panelCompetence.SetActive(false); // Fermer le panneau de compétences
+
+        btnUtiliseCompetence.interactable = false;
+        btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Compétence utilisée";
+        competenceUtiliseePourClasse[currentPlayerClass] = true;
 
         // Si l'assassin accepte t'utiliser sa compétence
         if (currentPlayerClass == "Assassin")
@@ -391,12 +416,30 @@ public class TurnManager : MonoBehaviour
                 break;
 
             case "Assassin":
-                // Implement the logic for Assassin here
-                Debug.Log("L'assassin vole la compétence d'un joueur");
+                if (selectedButtons.Count > 0)
+                {
+                    classeCibleAssassin = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
+                    Debug.Log($"L'assassin a ciblé la classe: {classeCibleAssassin}");
+
+                    // ... (le reste du code pour l'Assassin)
+
+                    // Réinitialiser le UI et les sélections
+                    foreach (var button in choiceButtons)
+                    {
+                        button.image.color = defaultButtonColor;
+                    }
+                    selectedButtons.Clear();
+                    selectedButtonCount = 0;
+                    UpdateConfirmButtonState();
+                }
+                else
+                {
+                    Debug.LogWarning("Aucun bouton n'a été sélectionné par l'assassin.");
+                }
                 break;
 
- 
-                // si aucune classe en cour ne fait partie de cette liste 
+
+            // si aucune classe en cour ne fait partie de cette liste 
             default:
                 Debug.LogWarning($"Unknown class: {currentPlayerClass}");
                 break;
