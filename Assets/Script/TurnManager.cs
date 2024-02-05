@@ -69,10 +69,11 @@ public class TurnManager : MonoBehaviour
 
     private int completeTurnCount = 0; // Pour compter le nombre de tours complets
 
-
+  
 
     // déclaration pour les compétence
     private string classeCibleAssassin;
+    private bool isAssassinSkillUsedThisTurn = false;
 
 
 
@@ -188,6 +189,17 @@ public class TurnManager : MonoBehaviour
             completeTurnCount++; // Incrémenter le compteur de tours complets
             Debug.Log($"Tour {completeTurnCount} fini"); // Afficher le message dans la console
 
+            // Vérifiez si l'assassin a utilisé sa compétence ce tour
+            if (isAssassinSkillUsedThisTurn)
+            {
+                Debug.Log("L'assassin a utilisé sa compétence ce tour."); // Afficher le message dans la console
+
+                // Désactiver le bouton de compétence de la classe ciblée par l'assassin
+                DisableTargetClassCompetenceButton(classeCibleAssassin);
+
+                isAssassinSkillUsedThisTurn = false; // Réinitialiser pour le prochain tour
+            }
+
             // Déterminer et mettre à jour le prochain chef
             int currentChefIndex = selectClasseScript.PlayerNames.IndexOf(selectChefScript.GetNomChef());
             int nextChefIndex = (currentChefIndex + 1) % selectClasseScript.PlayerNames.Count;
@@ -203,6 +215,7 @@ public class TurnManager : MonoBehaviour
             UpdateTurnTextAndImage();
         }
     }
+
 
 
 
@@ -258,13 +271,7 @@ public class TurnManager : MonoBehaviour
             }
 
             // Gérer l'activation du bouton Btn_utilise_competence
-            if (currentPlayerClass == classeCibleAssassin)
-            {
-                // Si le joueur actuel est la cible de l'Assassin, désactiver le bouton et changer le texte
-                btnUtiliseCompetence.interactable = false;
-                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Compétence bloquée par l'assassin";
-            }
-            else if (competenceUtiliseePourClasse.ContainsKey(currentPlayerClass) && competenceUtiliseePourClasse[currentPlayerClass])
+            if (competenceUtiliseePourClasse.ContainsKey(currentPlayerClass) && competenceUtiliseePourClasse[currentPlayerClass])
             {
                 // Si la compétence a été utilisée pour la classe en cours, désactiver le bouton et mettre à jour le texte
                 btnUtiliseCompetence.interactable = false;
@@ -282,7 +289,6 @@ public class TurnManager : MonoBehaviour
             Debug.LogError("Player index is out of range!");
         }
     }
-
 
 
 
@@ -421,16 +427,15 @@ public class TurnManager : MonoBehaviour
                     classeCibleAssassin = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
                     Debug.Log($"L'assassin a ciblé la classe: {classeCibleAssassin}");
 
-                    // ... (le reste du code pour l'Assassin)
-
-                    // Réinitialiser le UI et les sélections
+                    // Réinitialiser la couleur de tous les boutons à leur couleur initiale
                     foreach (var button in choiceButtons)
                     {
                         button.image.color = defaultButtonColor;
                     }
-                    selectedButtons.Clear();
-                    selectedButtonCount = 0;
-                    UpdateConfirmButtonState();
+                    selectedButtons.Clear(); // Vider la liste des boutons sélectionnés
+                    selectedButtonCount = 0; // Réinitialiser le compte des boutons sélectionnés
+                    UpdateConfirmButtonState(); // Mettre à jour l'état du bouton de confirmation
+                    isAssassinSkillUsedThisTurn = true;
                 }
                 else
                 {
@@ -443,6 +448,28 @@ public class TurnManager : MonoBehaviour
             default:
                 Debug.LogWarning($"Unknown class: {currentPlayerClass}");
                 break;
+        }
+    }
+
+    // fonction compétence assassin
+    private void DisableTargetClassCompetenceButton(string targetClassName)
+    {
+        // Trouver l'index du joueur avec la classe ciblée
+        int targetPlayerIndex = selectClasseScript.PlayerNames.IndexOf(targetClassName);
+        if (targetPlayerIndex != -1)
+        {
+            // Si la classe ciblée est trouvée, désactiver son bouton de compétence
+            competenceUtiliseePourClasse[targetClassName] = true;
+            if (targetPlayerIndex == currentPlayerIndex)
+            {
+                // Si la classe ciblée est le joueur actuel, désactiver le bouton immédiatement
+                btnUtiliseCompetence.interactable = false;
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Compétence utilisée";
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"La classe ciblée par l'assassin ({targetClassName}) n'a pas été trouvée.");
         }
     }
 
