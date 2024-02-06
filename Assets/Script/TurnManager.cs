@@ -337,8 +337,20 @@ public class TurnManager : MonoBehaviour
         // Si l'assassin accepte t'utiliser sa compétence
         if (currentPlayerClass == "Assassin")
         {
-            // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
+            // Activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
+
+            // Désactivez le bouton avec le texte "Assassin"
+            Button[] buttons = panelCompetenceChoixJoueur.GetComponentsInChildren<Button>();
+            foreach (Button button in buttons)
+            {
+                TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
+                if (buttonText != null && buttonText.text == "Assassin")
+                {
+                    button.interactable = false; // Désactivez le bouton
+                    break; // Quittez la boucle car vous avez trouvé le bouton
+                }
+            }
         }
         if (currentPlayerClass == "Sorcière")
         {
@@ -397,9 +409,21 @@ public class TurnManager : MonoBehaviour
         // Activer ou désactiver le bouton de confirmation
         btn_confirm_choix.interactable = (selectedButtonCount == 1);
 
+        // Récupérer le nom de la classe du joueur actuel en utilisant currentPlayerIndex
+        string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
+
         // Réactiver ou désactiver les autres boutons si nécessaire
         foreach (var button in choiceButtons)
         {
+            TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
+
+            // Vérifier si le bouton est celui de l'Assassin et si c'est le tour de l'Assassin
+            if (buttonText != null && buttonText.text == "Assassin" && currentPlayerClass == "Assassin")
+            {
+                button.interactable = false; // Gardez le bouton de l'Assassin désactivé
+                continue; // Continuez avec le prochain bouton dans la boucle
+            }
+
             if (!selectedButtons.Contains(button) && selectedButtonCount < 1)
             {
                 button.interactable = true; // Réactiver le bouton
@@ -410,6 +434,7 @@ public class TurnManager : MonoBehaviour
             }
         }
     }
+
     private void UpdateConfirmButtonState()
     {
         text_confirm.text = $"{selectedButtonCount}/1";
