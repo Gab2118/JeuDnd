@@ -74,6 +74,11 @@ public class TurnManager : MonoBehaviour
     // déclaration pour les compétence
     private string classeCibleAssassin;
     private bool isAssassinSkillUsedThisTurn = false;
+    private string targetClassForTextChange = null;
+    private int turnsSinceAssassinSkillUsed = 0;
+    private int turnsWaitedByAssassin = 0;
+    private int TourDepuisAssassina = 0;
+
 
 
 
@@ -209,12 +214,23 @@ public class TurnManager : MonoBehaviour
             currentPlayerIndex = nextChefIndex;
 
             UpdateTurnTextAndImage(); // Mettre à jour l'affichage pour le prochain tour
+
+            // Incrémente le compteur de tours depuis l'utilisation de la compétence de l'assassin
+            turnsSinceAssassinSkillUsed++;
+
+            // Vérifiez si deux tours se sont écoulés depuis l'utilisation de la compétence de l'assassin
+            if (turnsSinceAssassinSkillUsed == TourDepuisAssassina + 2)
+            {
+                // Activez le bouton Btn_utilise_competence de la cible de l'assassin
+                EnableTargetClassCompetenceButton(classeCibleAssassin);
+            }
         }
         else
         {
             UpdateTurnTextAndImage();
         }
     }
+
 
 
 
@@ -283,6 +299,12 @@ public class TurnManager : MonoBehaviour
                 btnUtiliseCompetence.interactable = true;
                 btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Utiliser compétence"; // Mettez ici le texte que vous voulez par défaut
             }
+            if (targetClassForTextChange == currentPlayerClass)
+            {
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Compétence bloquer par l'assassin";
+                targetClassForTextChange = null; // Réinitialisez pour ne pas changer le texte à nouveau inutilement
+            }
+
         }
         else
         {
@@ -436,12 +458,16 @@ public class TurnManager : MonoBehaviour
                     selectedButtonCount = 0; // Réinitialiser le compte des boutons sélectionnés
                     UpdateConfirmButtonState(); // Mettre à jour l'état du bouton de confirmation
                     isAssassinSkillUsedThisTurn = true;
+
+                    // Enregistrez le tour actuel dans TourDepuisAssassina
+                    TourDepuisAssassina = completeTurnCount;
                 }
                 else
                 {
                     Debug.LogWarning("Aucun bouton n'a été sélectionné par l'assassin.");
                 }
                 break;
+
 
 
             // si aucune classe en cour ne fait partie de cette liste 
@@ -454,23 +480,34 @@ public class TurnManager : MonoBehaviour
     // fonction compétence assassin
     private void DisableTargetClassCompetenceButton(string targetClassName)
     {
-        // Trouver l'index du joueur avec la classe ciblée
         int targetPlayerIndex = selectClasseScript.PlayerNames.IndexOf(targetClassName);
         if (targetPlayerIndex != -1)
         {
-            // Si la classe ciblée est trouvée, désactiver son bouton de compétence
             competenceUtiliseePourClasse[targetClassName] = true;
             if (targetPlayerIndex == currentPlayerIndex)
             {
-                // Si la classe ciblée est le joueur actuel, désactiver le bouton immédiatement
                 btnUtiliseCompetence.interactable = false;
-                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Compétence utilisée";
             }
+            // Stockez la classe ciblée pour le changement de texte au prochain tour
+            targetClassForTextChange = targetClassName;
         }
-        else
+        
+
+    }
+    private void EnableTargetClassCompetenceButton(string targetClassName)
+    {
+        int targetPlayerIndex = selectClasseScript.PlayerNames.IndexOf(targetClassName);
+        if (targetPlayerIndex != -1)
         {
-            Debug.LogWarning($"La classe ciblée par l'assassin ({targetClassName}) n'a pas été trouvée.");
+            competenceUtiliseePourClasse[targetClassName] = false;
+            if (targetPlayerIndex == currentPlayerIndex)
+            {
+                btnUtiliseCompetence.interactable = true;
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Utiliser compétence";
+            }
+            turnsSinceAssassinSkillUsed = 0; // Réinitialisez le compteur de tours depuis l'utilisation de la compétence de l'assassin
         }
+       
     }
 
 
