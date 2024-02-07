@@ -6,26 +6,27 @@ using System.Collections.Generic;
 
 public class TurnManager : MonoBehaviour
 {
-    public Button btnUtiliseCompetence; // Assurez-vous d'assigner ce bouton dans l'inspecteur Unity
-    private Dictionary<string, bool> competenceUtiliseePourClasse = new Dictionary<string, bool>();
-
-    // Pour la gestion des couleurs des boutons
-    public Button[] choiceButtons; // Assurez-vous d'assigner vos boutons dans l'inspecteur Unity
-    private Color32 defaultButtonColor = new Color32(190, 190, 190, 255); // Couleur initiale des boutons
-    private Color32 selectedButtonColor = new Color32(255, 0, 0, 255); // Couleur lorsqu'un bouton est sélectionné
-    private Button selectedButton;
-    private int selectedButtonCount = 0;
-    private List<Button> selectedButtons = new List<Button>();
-    public TMP_Text text_confirm;
-    public Button btn_confirm_choix;
-
-
-    public GameObject panelCompetenceChoixJoueur;
-
+    // page de jeu principal ( panel_jeu_principal
     public Button btnChoixChef;
+    public Button btnUtiliseCompetence; // bouton pour utilisé sa compétence
+    private Dictionary<string, bool> competenceUtiliseePourClasse = new Dictionary<string, bool>();
+    public TMP_Text roleDescriptionText; // description du role d'un joueur
+    public TMP_Text turnText; // texte pou afficher la classe du joueur
+    public TMP_Text skillDescriptionText; // description de la compétence
+    public Image classImageDisplay; // image utilisé pour afficher l'image de chaque classe (les sprites des classes)
+    public Button nextTurnButton; // bouton prochain tour
 
+    // Pour la gestion des couleurs des boutons de choix pour cible et ce qui à rapport avec le Panel_competence_choix_joueur
+    public GameObject panelCompetenceChoixJoueur;
+    public Button[] choiceButtons; // les six boutons pour choisir une cible aprés avoir accepter d'utiliser sa compétence
+    private Color32 defaultButtonColor = new Color32(190, 190, 190, 255); // Couleur initiale des boutons (parmit les 6)
+    private Color32 selectedButtonColor = new Color32(255, 0, 0, 255); // Couleur lorsqu'un bouton est sélectionné
+    private int selectedButtonCount = 0; // nombre de bouton sélectionner
+    private List<Button> selectedButtons = new List<Button>(); // list des bouton sélectionner
+    public Button btn_confirm_choix; // bouton de confirmation pour la cible du panel : Panel_competence_choix_joueur
+    public TMP_Text text_confirm; // texte du bouton afin de afficher le nombre de sélectionner (0/1 ou 1/1)
 
-
+    // pour contenir les informations de chaque compétence pour chaque classe
     [System.Serializable]
     public class Skill
     {
@@ -33,6 +34,7 @@ public class TurnManager : MonoBehaviour
         public string description;
     }
 
+    // contenir les sprites par rapport à chaque classes
     [System.Serializable]
     public class ClassImage
     {
@@ -40,22 +42,15 @@ public class TurnManager : MonoBehaviour
         public Sprite classSprite;
     }
 
-    // panel compétence dans scene_game_chef
-    public GameObject panelCompetence;
-    public Button yesButton;
-    public Button noButton;
+    // panel compétence afin de permettre au joueur de choisir d'utiliser ou non sa compétence
+    public GameObject panelCompetence; // Le panel panel_competence
+    public Button yesButton; // accepter d'utiliser sa compétence
+    public Button noButton; // refuser d'utiliser sa compétence
     public TMP_Text skillNameText;
 
-    // panel_jeu_principal
-    public TMP_Text roleDescriptionText;
-    public TMP_Text turnText;
-    public TMP_Text skillDescriptionText;
-    public Image classImageDisplay;
-    public Button nextTurnButton;
-
-    // récupération des données des autres script 
-    private Select_role selectRoleScript;
-    private Select_Classe selectClasseScript;
+   // récupération des données des autres script 
+    private Select_role selectRoleScript; // script pour la distribution des rôle
+    private Select_Classe selectClasseScript; // script pour la sélection des classes
     private Select_chef selectChefScript;
 
     // autre divers
@@ -69,15 +64,15 @@ public class TurnManager : MonoBehaviour
 
     private int completeTurnCount = 0; // Pour compter le nombre de tours complets
 
-  
-
     // déclaration pour les compétence
-    private string classeCibleAssassin;
-    private bool isAssassinSkillUsedThisTurn = false;
-    private string targetClassForTextChange = null;
-    private int turnsSinceAssassinSkillUsed = 0;
-    private int turnsWaitedByAssassin = 0;
-    private int TourDepuisAssassina = 0;
+    private string classeCibleAssassin; // stock le nom de la classe cibler
+    private bool isAssassinSkillUsedThisTurn = false; // vérifie si la compétence de l'assassin a été utilisé
+
+
+    private string targetClassForTextChange = null;// stocke le nom de la classe pour le texte du bouton d'utilisation de la compétence doit être modifié 
+
+    private int turnsSinceAssassinSkillUsed = 0; // compte le nombre de tours écoulés depuis que la compétence de l'assassin a été utilisée.
+    private int TourDepuisAssassina = 0; // enregistre le tour pendant lequel la compétence de l'assassin a été utilisée pour la dernière fois.
 
 
 
@@ -86,46 +81,44 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
-        selectChefScript = FindObjectOfType<Select_chef>();
-        if (selectChefScript == null)
-        {
-            Debug.LogError("Select_chef script not found!");
-        }
-        selectRoleScript = FindObjectOfType<Select_role>();
-        yesButton.onClick.AddListener(OnYesButtonClicked);
-        noButton.onClick.AddListener(OnNoButtonClicked);
-        selectClasseScript = FindObjectOfType<Select_Classe>();
-        selectChefScript = FindObjectOfType<Select_chef>();
+        selectChefScript = FindObjectOfType<Select_chef>(); // recherche dans la scene le script select_chef
+        selectRoleScript = FindObjectOfType<Select_role>();// recherche dans la scene le script select_role
+        selectClasseScript = FindObjectOfType<Select_Classe>(); // recherche dans la scene le script select_classe
+
+        // void start du panel_competence
+        yesButton.onClick.AddListener(OnYesButtonClicked); // écouteur de clique du bouton oui
+        noButton.onClick.AddListener(OnNoButtonClicked);// écouteur de clique du bouton non
+
+
+        // void start du Panel_competence_choix_joueur
+        btn_confirm_choix.onClick.AddListener(OnConfirmButtonClicked);
         for (int i = 0; i < choiceButtons.Length; i++)
         {
-            // Obtenez le composant TextMeshProUGUI du bouton et définissez-le au nom de classe du joueur
+            // aller chercher les text de chaque bouton et y placer le nom de classe ( 1 bouton pour une classe donc 6 en tout)
             TextMeshProUGUI buttonText = choiceButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+            // et le changer par le nom de classe
             buttonText.text = selectClasseScript.PlayerNames[i];
         }
 
-        btn_confirm_choix.interactable = false;
+        btn_confirm_choix.interactable = false; // logique de false ou true pour activer ou désactiver pour le bouton de confirmation du choix de la cible
+        // pour chaque des six bouton lance une fonctione
         foreach (var button in choiceButtons)
         {
+            // lancer la fonction
             button.onClick.AddListener(() => OnChoiceButtonClicked(button));
         }
-
-
-        if (selectClasseScript == null || selectChefScript == null || classImageDisplay == null || panelCompetence == null || skillNameText == null)
-        {
-            Debug.LogError("Required components or scripts not found in the scene!");
-            return;
-        }
-
-        InitializeClassColors();
-        InitializeClassImagesDictionary();
-        InitializeSkillBank(); // Initialiser la banque de compétences
-        SetStartingPlayerAsChef();
-        nextTurnButton.onClick.AddListener(OnNextTurnButtonClicked);
-        UpdateTurnTextAndImage();
-        btn_confirm_choix.onClick.AddListener(OnConfirmButtonClicked);
+        // void start page jeu principal
+        InitializeClassColors(); // définie les couleurs de chaque clase de personnage ( couleur de nom)
+        InitializeClassImagesDictionary(); //fonctione pour associe une image pour chaque classe
+        InitializeSkillBank(); // fonction pour Initialiser la banque de compétences
+        SetStartingPlayerAsChef(); // fonction faire débuter le chef en premier
+        nextTurnButton.onClick.AddListener(OnNextTurnButtonClicked); // écouteur de clique pour le bouton tour suivant
+        UpdateTurnTextAndImage(); // mettre à jour les text et images
+      
     }
 
 
+    // initialiser les couleur pour chaque classe
     private void InitializeClassColors()
     {
         classColors.Add("Guerrier", Color.red);
@@ -140,7 +133,7 @@ public class TurnManager : MonoBehaviour
         classColors.Add("Assassin", new Color(1f, 0.5f, 0)); // Orange
         classColors.Add("Paladin", Color.white);
     }
-
+    //fonction pour associe une image pour chaque classe
     private void InitializeClassImagesDictionary()
     {
         foreach (ClassImage classImage in classImages)
@@ -169,19 +162,14 @@ public class TurnManager : MonoBehaviour
     }
 
 
-    // Le chef commence en premier
+    // fonction pour que le chef commence en premier
     private void SetStartingPlayerAsChef()
     {
         string chefName = selectChefScript.GetNomChef();
         currentPlayerIndex = selectClasseScript.PlayerNames.IndexOf(chefName);
-        if (currentPlayerIndex == -1)
-        {
-            Debug.LogError("Le chef n'a pas été trouvé dans la liste des joueurs !");
-            currentPlayerIndex = 0;
-        }
     }
 
-    // vérifier si tout les tour sont fait
+    //fonction à chaque fois que on clique sur tour suivant
     private void OnNextTurnButtonClicked()
     {
         currentPlayerIndex = (currentPlayerIndex + 1) % selectClasseScript.PlayerNames.Count;
@@ -192,17 +180,14 @@ public class TurnManager : MonoBehaviour
         {
             turnCounter = 0; // Réinitialiser le compteur de tours pour le prochain tour
             completeTurnCount++; // Incrémenter le compteur de tours complets
-            Debug.Log($"Tour {completeTurnCount} fini"); // Afficher le message dans la console
+            Debug.Log($"Tour {completeTurnCount} fini"); // afficher quel numéro de tour est finit
 
             // Vérifiez si l'assassin a utilisé sa compétence ce tour
             if (isAssassinSkillUsedThisTurn)
-            {
-                Debug.Log("L'assassin a utilisé sa compétence ce tour."); // Afficher le message dans la console
-
-                // Désactiver le bouton de compétence de la classe ciblée par l'assassin
+            {     
+                // Désactiver le bouton de compétence de la classe ciblée par l'assassin si il a utilisé sa compétence
                 DisableTargetClassCompetenceButton(classeCibleAssassin);
-
-                isAssassinSkillUsedThisTurn = false; // Réinitialiser pour le prochain tour
+                isAssassinSkillUsedThisTurn = false; // si non utiliser
             }
 
             // Déterminer et mettre à jour le prochain chef
@@ -210,7 +195,7 @@ public class TurnManager : MonoBehaviour
             int nextChefIndex = (currentChefIndex + 1) % selectClasseScript.PlayerNames.Count;
             selectChefScript.SetNomChef(selectClasseScript.PlayerNames[nextChefIndex]);
 
-            // Réinitialiser currentPlayerIndex pour que le chef soit le premier joueur du prochain tour
+            // Réinitialiser currentPlayerIndex pour que le chef soit le premier à jouer au prochain tour
             currentPlayerIndex = nextChefIndex;
 
             UpdateTurnTextAndImage(); // Mettre à jour l'affichage pour le prochain tour
@@ -221,12 +206,13 @@ public class TurnManager : MonoBehaviour
             // Vérifiez si deux tours se sont écoulés depuis l'utilisation de la compétence de l'assassin
             if (turnsSinceAssassinSkillUsed == TourDepuisAssassina + 2)
             {
-                // Activez le bouton Btn_utilise_competence de la cible de l'assassin
+                // réactiver le bouton d'utilisation de la compétence de l'assassin
                 EnableTargetClassCompetenceButton(classeCibleAssassin);
             }
         }
         else
         {
+            // aller à la fonction
             UpdateTurnTextAndImage();
         }
     }
@@ -240,40 +226,31 @@ public class TurnManager : MonoBehaviour
     {
         if (selectClasseScript.PlayerNames.Count > currentPlayerIndex)
         {
-            string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
-            string colorHex = ColorUtility.ToHtmlStringRGB(classColors.ContainsKey(currentPlayerClass) ? classColors[currentPlayerClass] : Color.white);
-            turnText.text = $"<color=#{colorHex}>{currentPlayerClass}</color>";
 
+            string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex]; // chercher les données du script
+            // convertie les couleur en format hexadécimal RGB
+            string colorHex = ColorUtility.ToHtmlStringRGB(classColors.ContainsKey(currentPlayerClass) ? classColors[currentPlayerClass] : Color.white);
+            turnText.text = $"<color=#{colorHex}>{currentPlayerClass}</color>"; // changer la couleur
+
+            // changer l'image
             if (classImageDictionary.ContainsKey(currentPlayerClass))
             {
                 classImageDisplay.sprite = classImageDictionary[currentPlayerClass];
             }
-            else
-            {
-                Debug.LogWarning($"Aucune image trouvée pour la classe {currentPlayerClass}");
-            }
-
+            // changer le text de la description et nom de la compétence
             if (skillBank.ContainsKey(currentPlayerClass))
             {
                 skillNameText.text = skillBank[currentPlayerClass].skillName;
                 skillDescriptionText.text = skillBank[currentPlayerClass].description;
             }
-            else
-            {
-                skillNameText.text = "Compétence inconnue";
-                skillDescriptionText.text = ""; // Réinitialiser le texte de la description de la compétence
-            }
-
+            // aller chercher la description du role du joueur et l'afficher
             Select_role.Role currentPlayerRole = selectRoleScript.GetPlayerRole(currentPlayerIndex);
             if (currentPlayerRole != null)
             {
                 roleDescriptionText.text = currentPlayerRole.description;
             }
-            else
-            {
-                roleDescriptionText.text = "Description du rôle inconnue";
-            }
 
+            // quand cest le tour du chef changer le text du btn : Btn_choix_chef
             string currentPlayerName = selectClasseScript.PlayerNames[currentPlayerIndex];
             if (currentPlayerName == selectChefScript.GetNomChef())
             {
@@ -282,6 +259,7 @@ public class TurnManager : MonoBehaviour
             }
             else
             {
+                // si le joueur en cour nest pas le chef changer le text du bouton de choix pour la mission et le désactivé
                 btnChoixChef.GetComponentInChildren<TMP_Text>().text = "En attente du chef";
                 btnChoixChef.interactable = false;
             }
@@ -295,20 +273,17 @@ public class TurnManager : MonoBehaviour
             }
             else
             {
-                // Sinon, activer le bouton et réinitialiser le texte (ou le mettre à ce que vous voulez par défaut)
+                // Sinon, activer le bouton et réinitialiser le texte par défaut
                 btnUtiliseCompetence.interactable = true;
                 btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Utiliser compétence"; // Mettez ici le texte que vous voulez par défaut
             }
+            // changer le text du bouton pour utiliser la compétence et le désactiver
             if (targetClassForTextChange == currentPlayerClass)
             {
                 btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Compétence bloquer par l'assassin";
-                targetClassForTextChange = null; // Réinitialisez pour ne pas changer le texte à nouveau inutilement
+                targetClassForTextChange = null;
             }
 
-        }
-        else
-        {
-            Debug.LogError("Player index is out of range!");
         }
     }
 
@@ -316,7 +291,7 @@ public class TurnManager : MonoBehaviour
 
 
 
-    // charger la scène suivante
+    // charger la scène suivante  À ABSOLUMENT GARDER DONC PAS TOUCHE PLEASE :)
     private void LoadEmptyScene()
     {
         SceneManager.LoadScene("scene_vide");
@@ -352,34 +327,40 @@ public class TurnManager : MonoBehaviour
                 }
             }
         }
+        // si la sorcière accepte d'utiliser sa compétence
         if (currentPlayerClass == "Sorcière")
         {
 
             // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
         }
+        // si le démoniste refuse d'utilisé sa compétence
         if (currentPlayerClass == " Démoniste")
         {
             // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
 
         }
+        // si le clerc accepte d'utiliser sa compétence
         if (currentPlayerClass == "Clerc")
         {
             // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
 
         }
+        // si le moine accepte d'utiliser sa compétence
         if (currentPlayerClass == "Moine")
         {
             // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
 
         }
+
+        // NOTE : AJOUTER LES AUTRES CLASSES PLUS TARD
     }
 
 
-
+    // si le joueur refuse d'utiliser sa compétence
     private void OnNoButtonClicked()
     {
         Debug.Log("Compétence non utilisée.");
@@ -388,19 +369,20 @@ public class TurnManager : MonoBehaviour
     }
     private void OnChoiceButtonClicked(Button clickedButton)
     {
+
         if (selectedButtons.Contains(clickedButton))
         {
             // Désélectionner le bouton
             clickedButton.image.color = defaultButtonColor;
             selectedButtons.Remove(clickedButton);
-            selectedButtonCount--;
+            selectedButtonCount--; // diminuer de -1, le nombre de bouton sélectionner
         }
-        else if (selectedButtonCount < 2) // Assurez-vous de ne pas sélectionner plus de 2 boutons
+        else if (selectedButtonCount < 2) // si le nombre de bouton sélectionner est plus petit que 2 faire ceci
         {
             // Sélectionner le bouton
             clickedButton.image.color = selectedButtonColor;
             selectedButtons.Add(clickedButton);
-            selectedButtonCount++;
+            selectedButtonCount++; // ajouter + 1 au nombre de bouton
         }
 
         // Mettre à jour le texte confirm
@@ -426,17 +408,18 @@ public class TurnManager : MonoBehaviour
 
             if (!selectedButtons.Contains(button) && selectedButtonCount < 1)
             {
-                button.interactable = true; // Réactiver le bouton
+                button.interactable = true; // Réactiver les bouton
             }
             else if (!selectedButtons.Contains(button) && selectedButtonCount == 1)
             {
-                button.interactable = false; // Désactiver le bouton
+                button.interactable = false; // Désactiver les bouton
             }
         }
     }
 
     private void UpdateConfirmButtonState()
     {
+        // mettre à jour le statut du bouton
         text_confirm.text = $"{selectedButtonCount}/1";
         btn_confirm_choix.interactable = (text_confirm.text == "1/1");
     }
@@ -446,28 +429,34 @@ public class TurnManager : MonoBehaviour
         // récupérer le tour du joueur en cour
         string currentPlayerClass = selectClasseScript.PlayerNames[currentPlayerIndex];
 
-        // si tel classes clique sur btn_confirm_choice
+        // si tel classes clique sur btn_confirm_choice pour confirmer sa cible
         switch (currentPlayerClass)
         {
+            // si c'est la sorcière
             case "Sorcière":
-                // Implement the logic for Sorcière here
+               
                 Debug.Log("La sorcière aperçoit le choix de quelqu'un");
                 break;
 
+                // si c'est le démoniste
             case "Démoniste":
                 // Implement the logic for Démoniste here
                 Debug.Log("Le démoniste à maudit un joueur");
                 break;
+
+                //si c'est la clerc
             case "Clerc":
                 // Implement the logic for Clerc here
                 Debug.Log("La clerc à nommé un nouveau chef");
                 break;
 
+                // si c'est le moine
             case "Moine":
                 // Implement the logic for Moine here
                 Debug.Log("Le moine à amener un joueur à méditer");
                 break;
 
+                // si c'est le moin
             case "Assassin":
                 if (selectedButtons.Count > 0)
                 {
@@ -487,29 +476,21 @@ public class TurnManager : MonoBehaviour
                     // Enregistrez le tour actuel dans TourDepuisAssassina
                     TourDepuisAssassina = completeTurnCount;
                 }
-                else
-                {
-                    Debug.LogWarning("Aucun bouton n'a été sélectionné par l'assassin.");
-                }
-                break;
-
-
-
-            // si aucune classe en cour ne fait partie de cette liste 
-            default:
-                Debug.LogWarning($"Unknown class: {currentPlayerClass}");
                 break;
         }
     }
 
-    // fonction compétence assassin
+    // fonction compétence assassin pour désactiver le bouton compétence de sa cible
     private void DisableTargetClassCompetenceButton(string targetClassName)
     {
+        // trouver l'index de la cible
         int targetPlayerIndex = selectClasseScript.PlayerNames.IndexOf(targetClassName);
+        // si trouver 
         if (targetPlayerIndex != -1)
         {
+            // si il exist, considerer que l'assassin a utiliser sa compétence
             competenceUtiliseePourClasse[targetClassName] = true;
-            if (targetPlayerIndex == currentPlayerIndex)
+            if (targetPlayerIndex == currentPlayerIndex) // si la cible est en train de jouer, désactiver son bouton compétence
             {
                 btnUtiliseCompetence.interactable = false;
             }
@@ -519,8 +500,10 @@ public class TurnManager : MonoBehaviour
         
 
     }
+    // réactiver le bouton de la cible
     private void EnableTargetClassCompetenceButton(string targetClassName)
     {
+        // trouver l'index de la cible
         int targetPlayerIndex = selectClasseScript.PlayerNames.IndexOf(targetClassName);
         if (targetPlayerIndex != -1)
         {

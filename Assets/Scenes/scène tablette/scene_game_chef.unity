@@ -3670,7 +3670,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdf827936461af444bfd35afd004143c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  btnChoixChef: {fileID: 1542032332}
   btnUtiliseCompetence: {fileID: 176274139}
+  roleDescriptionText: {fileID: 181100756}
+  turnText: {fileID: 78175887}
+  skillDescriptionText: {fileID: 1740416592}
+  classImageDisplay: {fileID: 579953681}
+  nextTurnButton: {fileID: 1450495890}
+  panelCompetenceChoixJoueur: {fileID: 3770477532750066834}
   choiceButtons:
   - {fileID: 1230647734}
   - {fileID: 441139332}
@@ -3678,19 +3685,12 @@ MonoBehaviour:
   - {fileID: 2037344679}
   - {fileID: 894361073}
   - {fileID: 1514718602}
-  text_confirm: {fileID: 357781040}
   btn_confirm_choix: {fileID: 230538974}
-  panelCompetenceChoixJoueur: {fileID: 3770477532750066834}
-  btnChoixChef: {fileID: 1542032332}
+  text_confirm: {fileID: 357781040}
   panelCompetence: {fileID: 2137540715}
   yesButton: {fileID: 2137540719}
   noButton: {fileID: 2137540718}
   skillNameText: {fileID: 2137540717}
-  roleDescriptionText: {fileID: 181100756}
-  turnText: {fileID: 78175887}
-  skillDescriptionText: {fileID: 1740416592}
-  classImageDisplay: {fileID: 579953681}
-  nextTurnButton: {fileID: 1450495890}
   classImages:
   - className: Guerrier
     classSprite: {fileID: 21300000, guid: fa007eee6f397dd4db5290a9acf7cc21, type: 3}
