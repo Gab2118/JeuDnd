@@ -74,6 +74,7 @@ public class TurnManager : MonoBehaviour
     private string classeCibleClerc;
     // Démoniste
     private string classeCibleDemoniste;
+    private bool doitReactiverBoutonPourCibleDemoniste = false;
 
 
 
@@ -219,7 +220,15 @@ public class TurnManager : MonoBehaviour
                 EnableTargetClassCompetenceButton(classeCibleAssassin);
                 turnsSinceAssassinSkillUsed = 0; // Réinitialiser le compteur
             }
+            if (doitReactiverBoutonPourCibleDemoniste)
+            {
+                PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+                playerChoiceHandler.SetPlayerButtonActiveState(classeCibleDemoniste, true);
+                classeCibleDemoniste = null; // Réinitialiser la cible
+                doitReactiverBoutonPourCibleDemoniste = false; // Réinitialiser le drapeau
+            }
         }
+
 
         UpdateTurnTextAndImage(); // Mettre à jour l'affichage pour le prochain tour
     }
@@ -450,8 +459,13 @@ public class TurnManager : MonoBehaviour
                 if (selectedButtons.Count > 0)
                 {
                     classeCibleDemoniste = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
+                  
+                    PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+                    if (playerChoiceHandler != null)
+                    {
+                        playerChoiceHandler.SetPlayerButtonActiveState(classeCibleDemoniste, false);
+                    }
                     Debug.Log($"Le Démoniste à maudit la cible suivant: {classeCibleDemoniste}");
-
                     // Réinitialiser la sélection après avoir confirmé la cible
                     foreach (var button in choiceButtons)
                     {

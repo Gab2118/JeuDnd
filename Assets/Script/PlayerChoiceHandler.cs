@@ -1,43 +1,25 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-
-// CE SCRIPT PERMETS AUX CHEF DE CHOISIR 2 JOUEURS À ENVOYEZ EN MISSION
 
 public class PlayerChoiceHandler : MonoBehaviour
 {
-    // groupe des six bouton, un pour chaque joueur ( avec leur nom écrit dedans)
-    public Button[] buttons;
-    
-    // nombre de bouton sélectionner
-    private int selectionnerBtn = 0;
-
-    // couleur de visualiser la sélection
-    private Color32 couleurOriginale; // couleur original
-    private Color32 couleurChangement = new Color32(255, 0, 0, 255);
-
-    // text affichant en direct le nombre de joueur sélectionner
-    public TextMeshProUGUI decompte;
-
-    // btn pour confirmer le choix
-    public Button Bouton_choix_finit;
-
-    // accès au scripts
-    private Select_Classe selectClasseScript;
-
- 
-  
- // stocker si il est sélectionner ou non
-    private Dictionary<Button, bool> boutonEtat;
-    private List<string> joueursSelectionnes; // Liste pour stocker les joueurs sélectionnés
+    public Button[] buttons; // Groupe des six boutons, un pour chaque joueur
+    private int selectionnerBtn = 0; // Nombre de boutons sélectionnés
+    private Color32 couleurOriginale; // Couleur originale des boutons
+    private Color32 couleurChangement = new Color32(255, 0, 0, 255); // Couleur pour indiquer la sélection
+    public TextMeshProUGUI decompte; // Texte affichant le nombre de joueurs sélectionnés
+    public Button Bouton_choix_finit; // Bouton pour confirmer le choix
+    private Select_Classe selectClasseScript; // Accès aux scripts
+    private Dictionary<Button, bool> boutonEtat; // Stocke si un bouton est sélectionné ou non
+    private List<string> joueursSelectionnes = new List<string>(); // Liste pour stocker les joueurs sélectionnés
+    private Dictionary<Button, bool> boutonsNePasReactiver = new Dictionary<Button, bool>(); // Pour marquer les boutons qui ne doivent pas être réactivés
 
     void Start()
     {
         selectClasseScript = FindObjectOfType<Select_Classe>();
         List<string> playerClasses = selectClasseScript.GetPlayerNames();
-        joueursSelectionnes = new List<string>();
 
         boutonEtat = new Dictionary<Button, bool>();
         couleurOriginale = buttons[0].GetComponent<Image>().color;
@@ -45,8 +27,8 @@ public class PlayerChoiceHandler : MonoBehaviour
         for (int i = 0; i < buttons.Length; i++)
         {
             boutonEtat.Add(buttons[i], false);
-            int buttonIndex = i; // Capture l'index actuel de la boucle
-            buttons[i].onClick.AddListener(() => BoutonCliquer(buttonIndex)); // Utilisez buttonIndex ici
+            int buttonIndex = i;
+            buttons[i].onClick.AddListener(() => BoutonCliquer(buttonIndex));
             if (i < playerClasses.Count)
             {
                 buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = playerClasses[i];
@@ -57,27 +39,13 @@ public class PlayerChoiceHandler : MonoBehaviour
             }
         }
         UpdateDecompteText();
-
         Bouton_choix_finit.onClick.AddListener(AfficherJoueursSelectionnes);
         Bouton_choix_finit.interactable = false;
-
-        // Afficher les joueurs sélectionnés ou un message si aucun joueur n'est sélectionné au début de la scène
-        if (joueursSelectionnes.Count > 0)
-        {
-            foreach (string joueur in joueursSelectionnes)
-            {
-                Debug.Log("Joueur sélectionné : " + joueur);
-            }
-        }
-        else
-        {
-            Debug.Log("Aucun joueur sélectionné.");
-        }
     }
 
     void BoutonCliquer(int buttonIndex)
     {
-        Button btn = buttons[buttonIndex]; // Obtenez le bouton à partir de l'index
+        Button btn = buttons[buttonIndex];
         bool estSelectionne = boutonEtat[btn];
         string nomJoueur = btn.GetComponentInChildren<TextMeshProUGUI>().text;
 
@@ -86,14 +54,14 @@ public class PlayerChoiceHandler : MonoBehaviour
             selectionnerBtn++;
             boutonEtat[btn] = true;
             btn.GetComponent<Image>().color = couleurChangement;
-            joueursSelectionnes.Add(nomJoueur); // Ajoutez le joueur à la liste des joueurs sélectionnés
+            joueursSelectionnes.Add(nomJoueur);
         }
         else if (estSelectionne)
         {
             selectionnerBtn--;
             boutonEtat[btn] = false;
             btn.GetComponent<Image>().color = couleurOriginale;
-            joueursSelectionnes.Remove(nomJoueur); // Retirez le joueur de la liste des joueurs sélectionnés
+            joueursSelectionnes.Remove(nomJoueur);
         }
 
         UpdateDecompteText();
@@ -105,6 +73,11 @@ public class PlayerChoiceHandler : MonoBehaviour
     {
         foreach (Button btn in buttons)
         {
+            if (boutonsNePasReactiver.ContainsKey(btn) && boutonsNePasReactiver[btn])
+            {
+                continue; // Ne pas réactiver ce bouton spécifiquement
+            }
+
             if (!boutonEtat[btn] && selectionnerBtn < 2)
             {
                 btn.interactable = true;
@@ -128,19 +101,31 @@ public class PlayerChoiceHandler : MonoBehaviour
 
     void AfficherJoueursSelectionnes()
     {
-        if (joueursSelectionnes.Count > 0)
+        foreach (string joueur in joueursSelectionnes)
         {
-            foreach (string joueur in joueursSelectionnes)
-            {
-                Debug.Log("Joueur sélectionné : " + joueur);
-            }
-        }
-        else
-        {
-            Debug.Log("Aucun joueur sélectionné.");
+            Debug.Log("Joueur sélectionné : " + joueur);
         }
     }
 
-
- 
+    public void SetPlayerButtonActiveState(string playerName, bool isActive)
+    {
+        foreach (Button button in buttons)
+        {
+            if (button.GetComponentInChildren<TextMeshProUGUI>().text == playerName)
+            {
+                button.interactable = isActive;
+                if (!isActive)
+                {
+                    // Marquer le bouton pour ne pas être réactivé automatiquement
+                    boutonsNePasReactiver[button] = true;
+                }
+                else
+                {
+                    // Enlever le marqueur si le bouton est réactivé manuellement
+                    boutonsNePasReactiver[button] = false;
+                }
+                break;
+            }
+        }
+    }
 }
