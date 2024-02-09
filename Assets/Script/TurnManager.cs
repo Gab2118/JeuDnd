@@ -64,16 +64,16 @@ public class TurnManager : MonoBehaviour
 
     private int completeTurnCount = 0; // Pour compter le nombre de tours complets
 
-    // déclaration pour les compétence
+    // déclaration pour les compétence coté assassin
     private string classeCibleAssassin; // stock le nom de la classe cibler
     private bool isAssassinSkillUsedThisTurn = false; // vérifie si la compétence de l'assassin a été utilisé
-
-
     private string targetClassForTextChange = null;// stocke le nom de la classe pour le texte du bouton d'utilisation de la compétence doit être modifié 
-
     private int turnsSinceAssassinSkillUsed = 0; // compte le nombre de tours écoulés depuis que la compétence de l'assassin a été utilisée.
     private int TourDepuisAssassina = 0; // enregistre le tour pendant lequel la compétence de l'assassin a été utilisée pour la dernière fois.
-
+    // clerc 
+    private string classeCibleClerc;
+    // Démoniste
+    private string classeCibleDemoniste;
 
 
 
@@ -172,50 +172,58 @@ public class TurnManager : MonoBehaviour
     //fonction à chaque fois que on clique sur tour suivant
     private void OnNextTurnButtonClicked()
     {
+        // Incrementer l'index du joueur actuel et le compteur de tour
         currentPlayerIndex = (currentPlayerIndex + 1) % selectClasseScript.PlayerNames.Count;
         turnCounter++;
 
-        // Si tous les joueurs ont joué une fois, c'est la fin d'un tour complet
+        // Verifier si tous les joueurs ont joué une fois
         if (turnCounter >= selectClasseScript.PlayerNames.Count)
         {
             turnCounter = 0; // Réinitialiser le compteur de tours pour le prochain tour
-            completeTurnCount++; // Incrémenter le compteur de tours complets
-            Debug.Log($"Tour {completeTurnCount} fini"); // afficher quel numéro de tour est finit
+            completeTurnCount++; // Incrementer le compteur de tours complets
 
-            // Vérifiez si l'assassin a utilisé sa compétence ce tour
+            // Vérifier si l'assassin a utilisé sa compétence ce tour
             if (isAssassinSkillUsedThisTurn)
-            {     
-                // Désactiver le bouton de compétence de la classe ciblée par l'assassin si il a utilisé sa compétence
+            {
                 DisableTargetClassCompetenceButton(classeCibleAssassin);
-                isAssassinSkillUsedThisTurn = false; // si non utiliser
+                isAssassinSkillUsedThisTurn = false;
             }
 
-            // Déterminer et mettre à jour le prochain chef
-            int currentChefIndex = selectClasseScript.PlayerNames.IndexOf(selectChefScript.GetNomChef());
-            int nextChefIndex = (currentChefIndex + 1) % selectClasseScript.PlayerNames.Count;
-            selectChefScript.SetNomChef(selectClasseScript.PlayerNames[nextChefIndex]);
+            // Si le Clerc a désigné un nouveau chef, faire de cette cible le chef
+            if (!string.IsNullOrEmpty(classeCibleClerc))
+            {
+                // Trouver l'index du nouveau chef parmi les joueurs
+                int newChefIndex = selectClasseScript.PlayerNames.IndexOf(classeCibleClerc);
+                if (newChefIndex != -1)
+                {
+                    selectChefScript.SetNomChef(classeCibleClerc);
+                    currentPlayerIndex = newChefIndex; // Faire commencer le nouveau chef
+                }
+                classeCibleClerc = null; // Réinitialiser la cible du Clerc
+            }
+            else
+            {
+                // Déterminer et mettre à jour le prochain chef de manière habituelle si le Clerc n'a pas choisi de cible
+                int currentChefIndex = selectClasseScript.PlayerNames.IndexOf(selectChefScript.GetNomChef());
+                int nextChefIndex = (currentChefIndex + 1) % selectClasseScript.PlayerNames.Count;
+                selectChefScript.SetNomChef(selectClasseScript.PlayerNames[nextChefIndex]);
+                currentPlayerIndex = nextChefIndex;
+            }
 
-            // Réinitialiser currentPlayerIndex pour que le chef soit le premier à jouer au prochain tour
-            currentPlayerIndex = nextChefIndex;
-
-            UpdateTurnTextAndImage(); // Mettre à jour l'affichage pour le prochain tour
-
-            // Incrémente le compteur de tours depuis l'utilisation de la compétence de l'assassin
+            // Réinitialiser le compteur de tours depuis l'utilisation de la compétence de l'assassin
             turnsSinceAssassinSkillUsed++;
 
-            // Vérifiez si deux tours se sont écoulés depuis l'utilisation de la compétence de l'assassin
-            if (turnsSinceAssassinSkillUsed == TourDepuisAssassina + 2)
+            // Vérifier si deux tours se sont écoulés depuis l'utilisation de la compétence de l'assassin
+            if (turnsSinceAssassinSkillUsed >= 2)
             {
-                // réactiver le bouton d'utilisation de la compétence de l'assassin
                 EnableTargetClassCompetenceButton(classeCibleAssassin);
+                turnsSinceAssassinSkillUsed = 0; // Réinitialiser le compteur
             }
         }
-        else
-        {
-            // aller à la fonction
-            UpdateTurnTextAndImage();
-        }
+
+        UpdateTurnTextAndImage(); // Mettre à jour l'affichage pour le prochain tour
     }
+
 
 
 
@@ -335,11 +343,9 @@ public class TurnManager : MonoBehaviour
             panelCompetenceChoixJoueur.SetActive(true);
         }
         // si le démoniste refuse d'utilisé sa compétence
-        if (currentPlayerClass == " Démoniste")
+        if (currentPlayerClass == "Démoniste")
         {
-            // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
-
         }
         // si le clerc accepte d'utiliser sa compétence
         if (currentPlayerClass == "Clerc")
@@ -440,14 +446,44 @@ public class TurnManager : MonoBehaviour
 
                 // si c'est le démoniste
             case "Démoniste":
-                // Implement the logic for Démoniste here
-                Debug.Log("Le démoniste à maudit un joueur");
+
+                if (selectedButtons.Count > 0)
+                {
+                    classeCibleDemoniste = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
+                    Debug.Log($"Le Démoniste à maudit la cible suivant: {classeCibleDemoniste}");
+
+                    // Réinitialiser la sélection après avoir confirmé la cible
+                    foreach (var button in choiceButtons)
+                    {
+                        button.image.color = defaultButtonColor;
+                    }
+                    selectedButtons.Clear(); // Vider la liste des boutons sélectionnés
+                    selectedButtonCount = 0; // Réinitialiser le compte des boutons sélectionnés
+                    UpdateConfirmButtonState(); // Mettre à jour l'état du bouton de confirmation
+
+                    // Ajoutez ici toute autre logique nécessaire pour la compétence du Clerc
+                }
                 break;
 
-                //si c'est la clerc
+            //si c'est la clerc
             case "Clerc":
                 // Implement the logic for Clerc here
-                Debug.Log("La clerc à nommé un nouveau chef");
+                if (selectedButtons.Count > 0)
+                {
+                    classeCibleClerc = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
+                    Debug.Log($"Le Clerc a choisi sa cible: {classeCibleClerc}");
+
+                    // Réinitialiser la sélection après avoir confirmé la cible
+                    foreach (var button in choiceButtons)
+                    {
+                        button.image.color = defaultButtonColor;
+                    }
+                    selectedButtons.Clear(); // Vider la liste des boutons sélectionnés
+                    selectedButtonCount = 0; // Réinitialiser le compte des boutons sélectionnés
+                    UpdateConfirmButtonState(); // Mettre à jour l'état du bouton de confirmation
+
+                    // Ajoutez ici toute autre logique nécessaire pour la compétence du Clerc
+                }
                 break;
 
                 // si c'est le moine
@@ -517,6 +553,8 @@ public class TurnManager : MonoBehaviour
         }
        
     }
+
+
 
 
 }
