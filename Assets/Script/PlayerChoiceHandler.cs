@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PlayerChoiceHandler : MonoBehaviour
 {
@@ -14,7 +15,9 @@ public class PlayerChoiceHandler : MonoBehaviour
     private Select_Classe selectClasseScript; // Accès aux scripts
     private Dictionary<Button, bool> boutonEtat; // Stocke si un bouton est sélectionné ou non
     private List<string> joueursSelectionnes = new List<string>(); // Liste pour stocker les joueurs sélectionnés
-    private Dictionary<Button, bool> boutonsNePasReactiver = new Dictionary<Button, bool>(); // Pour marquer les boutons qui ne doivent pas être réactivés
+    public Dictionary<Button, bool> boutonsNePasReactiver = new Dictionary<Button, bool>(); // Pour marquer les boutons qui ne doivent pas être réactivés
+    private Dictionary<Button, bool> boutonsSelectionForces = new Dictionary<Button, bool>();
+    private int toursDepuisModification = 0;
 
     void Start()
     {
@@ -42,7 +45,38 @@ public class PlayerChoiceHandler : MonoBehaviour
         Bouton_choix_finit.onClick.AddListener(AfficherJoueursSelectionnes);
         Bouton_choix_finit.interactable = false;
     }
+    public void ReinitialiserCouleurBoutons()
+    {
+        foreach (Button btn in buttons)
+        {
+            // Réinitialiser la couleur du bouton à la couleur originale
+            // Vérifiez d'abord si le bouton ne doit pas rester désactivé à cause d'une autre logique
+            if (!boutonsNePasReactiver.ContainsKey(btn) || !boutonsNePasReactiver[btn])
+            {
+                btn.GetComponent<Image>().color = couleurOriginale;
+            }
+        }
+    }
 
+    public void IncrementerToursDepuisModification()
+    {
+        toursDepuisModification++;
+
+        // Vérifier si deux tours se sont écoulés
+        if (toursDepuisModification >= 2)
+        {
+            // Réinitialiser boutonsNePasReactiver
+            foreach (var btn in boutonsNePasReactiver.Keys.ToList())
+            {
+                boutonsNePasReactiver[btn] = false;
+            }
+
+            // Possiblement réactiver les boutons ici si nécessaire
+            // Ou laisser la logique de réactivation à une autre partie du code qui vérifie boutonsNePasReactiver
+
+            toursDepuisModification = 0; // Réinitialiser le compteur
+        }
+    }
     void BoutonCliquer(int buttonIndex)
     {
         Button btn = buttons[buttonIndex];
@@ -105,6 +139,8 @@ public class PlayerChoiceHandler : MonoBehaviour
         {
             Debug.Log("Joueur sélectionné : " + joueur);
         }
+        ReinitialiserCouleurBoutons();
+
     }
 
     public void SetPlayerButtonActiveState(string playerName, bool isActive)
@@ -125,7 +161,60 @@ public class PlayerChoiceHandler : MonoBehaviour
                     boutonsNePasReactiver[button] = false;
                 }
                 break;
+                // probleme ici
             }
         }
+    }
+
+    public void ResetBoutonsNePasReactiver()
+    {
+        foreach (var button in boutonsNePasReactiver.Keys.ToList())
+        {
+            boutonsNePasReactiver[button] = false;
+        }
+    }
+
+
+    public void ForcerSelectionBouton(string playerName)
+    {
+        foreach (Button button in buttons)
+        {
+            if (button.GetComponentInChildren<TextMeshProUGUI>().text == playerName)
+            {
+
+                string nomJoueur = button.GetComponentInChildren<TextMeshProUGUI>().text;
+                // Forcer la sélection et le changement de couleur
+                boutonEtat[button] = true; // Simuler une sélection
+                button.GetComponent<Image>().color = couleurChangement; // Changer la couleur
+                boutonsSelectionForces[button] = true; // Marquer comme sélectionné par le Moine
+                joueursSelectionnes.Add(nomJoueur);
+
+
+
+
+
+                // Assurez-vous que le bouton n'est pas cliquable
+                button.interactable = false;
+                selectionnerBtn++;
+                UpdateDecompteText();
+                break;
+            }
+        }
+    }
+    public void ReinitialiserSelectionForces()
+    {
+        foreach (var entry in boutonsSelectionForces)
+        {
+            if (entry.Value) // Si la sélection a été forcée par le Moine
+            {
+                // Réinitialiser l'état à non sélectionné sans changer l'interactivité
+                boutonEtat[entry.Key] = false;
+                entry.Key.GetComponent<Image>().color = couleurOriginale;
+                selectionnerBtn--;
+                UpdateDecompteText();
+            }
+        }
+        // Nettoyer après réinitialisation
+        boutonsSelectionForces.Clear();
     }
 }

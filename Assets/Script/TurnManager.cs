@@ -53,6 +53,7 @@ public class TurnManager : MonoBehaviour
     private Select_Classe selectClasseScript; // script pour la sélection des classes
     private Select_chef selectChefScript;
 
+
     // autre divers
     public List<ClassImage> classImages; // Liste des paires classe-image (voir l'inspecteur)
     private Dictionary<string, bool> skillUsed = new Dictionary<string, bool>(); // Pour stocker si la compétence a été utilisée pour chaque classe
@@ -74,7 +75,13 @@ public class TurnManager : MonoBehaviour
     private string classeCibleClerc;
     // Démoniste
     private string classeCibleDemoniste;
+    private string classeCibleMoine;
     private bool doitReactiverBoutonPourCibleDemoniste = false;
+    private int tourCompetenceDemonisteUtilisee = 0;
+    private int tourCompetenceMoineUtilisee = 0;
+
+
+
 
 
 
@@ -82,6 +89,7 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
+
         selectChefScript = FindObjectOfType<Select_chef>(); // recherche dans la scene le script select_chef
         selectRoleScript = FindObjectOfType<Select_role>();// recherche dans la scene le script select_role
         selectClasseScript = FindObjectOfType<Select_Classe>(); // recherche dans la scene le script select_classe
@@ -89,6 +97,7 @@ public class TurnManager : MonoBehaviour
         // void start du panel_competence
         yesButton.onClick.AddListener(OnYesButtonClicked); // écouteur de clique du bouton oui
         noButton.onClick.AddListener(OnNoButtonClicked);// écouteur de clique du bouton non
+
 
 
         // void start du Panel_competence_choix_joueur
@@ -182,6 +191,8 @@ public class TurnManager : MonoBehaviour
         {
             turnCounter = 0; // Réinitialiser le compteur de tours pour le prochain tour
             completeTurnCount++; // Incrementer le compteur de tours complets
+            Debug.Log("Classe Cible Démoniste: " + classeCibleDemoniste);
+
 
             // Vérifier si l'assassin a utilisé sa compétence ce tour
             if (isAssassinSkillUsedThisTurn)
@@ -224,9 +235,40 @@ public class TurnManager : MonoBehaviour
             {
                 PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
                 playerChoiceHandler.SetPlayerButtonActiveState(classeCibleDemoniste, true);
-                classeCibleDemoniste = null; // Réinitialiser la cible
-                doitReactiverBoutonPourCibleDemoniste = false; // Réinitialiser le drapeau
+                classeCibleDemoniste = null; 
+                doitReactiverBoutonPourCibleDemoniste = false; 
             }
+            Debug.Log($"{completeTurnCount},{tourCompetenceDemonisteUtilisee}");
+            if (completeTurnCount == tourCompetenceDemonisteUtilisee + 2)
+            {
+                Debug.Log("on est ici");
+                classeCibleDemoniste = ""; // Réinitialiser la cible
+                PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+                if (playerChoiceHandler != null)
+                {
+                    playerChoiceHandler.ResetBoutonsNePasReactiver();
+                }
+            }
+
+            if (completeTurnCount - tourCompetenceMoineUtilisee == 2)
+            {
+                classeCibleMoine = "";
+                PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+                if (playerChoiceHandler != null)
+                {
+                    playerChoiceHandler.ReinitialiserSelectionForces();
+                }
+            }
+            if (completeTurnCount == tourCompetenceDemonisteUtilisee + 1)
+            {
+                Debug.Log("debut de la competence du demoniste");
+                PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+                if (playerChoiceHandler != null)
+                {
+                    playerChoiceHandler.SetPlayerButtonActiveState(classeCibleDemoniste, false);
+                }
+            }
+
         }
 
 
@@ -355,6 +397,7 @@ public class TurnManager : MonoBehaviour
         if (currentPlayerClass == "Démoniste")
         {
             panelCompetenceChoixJoueur.SetActive(true);
+            tourCompetenceDemonisteUtilisee = completeTurnCount;
         }
         // si le clerc accepte d'utiliser sa compétence
         if (currentPlayerClass == "Clerc")
@@ -366,6 +409,7 @@ public class TurnManager : MonoBehaviour
         // si le moine accepte d'utiliser sa compétence
         if (currentPlayerClass == "Moine")
         {
+            tourCompetenceMoineUtilisee = completeTurnCount;
             // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
 
@@ -460,11 +504,7 @@ public class TurnManager : MonoBehaviour
                 {
                     classeCibleDemoniste = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
                   
-                    PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
-                    if (playerChoiceHandler != null)
-                    {
-                        playerChoiceHandler.SetPlayerButtonActiveState(classeCibleDemoniste, false);
-                    }
+                   
                     Debug.Log($"Le Démoniste à maudit la cible suivant: {classeCibleDemoniste}");
                     // Réinitialiser la sélection après avoir confirmé la cible
                     foreach (var button in choiceButtons)
@@ -502,7 +542,16 @@ public class TurnManager : MonoBehaviour
 
                 // si c'est le moine
             case "Moine":
-                // Implement the logic for Moine here
+                if (selectedButtons.Count > 0)
+                {
+                    classeCibleMoine = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
+                    PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+                    if (playerChoiceHandler != null)
+                    {
+                        playerChoiceHandler.ForcerSelectionBouton(classeCibleMoine);
+                    }
+                    Debug.Log($"Le Moine a forcé la sélection sur : {classeCibleMoine}");
+                }
                 Debug.Log("Le moine à amener un joueur à méditer");
                 break;
 
@@ -528,6 +577,7 @@ public class TurnManager : MonoBehaviour
                 }
                 break;
         }
+
     }
 
     // fonction compétence assassin pour désactiver le bouton compétence de sa cible
