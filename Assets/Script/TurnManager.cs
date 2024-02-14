@@ -75,7 +75,7 @@ public class TurnManager : MonoBehaviour
     private string classeCibleClerc;
     // Démoniste
     private string classeCibleDemoniste;
-    private string classeCibleMoine;
+    public string classeCibleMoine;
     private bool doitReactiverBoutonPourCibleDemoniste = false;
     private int tourCompetenceDemonisteUtilisee = 0;
     private int tourCompetenceMoineUtilisee = 0;
@@ -235,8 +235,8 @@ public class TurnManager : MonoBehaviour
             {
                 PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
                 playerChoiceHandler.SetPlayerButtonActiveState(classeCibleDemoniste, true);
-                classeCibleDemoniste = null; 
-                doitReactiverBoutonPourCibleDemoniste = false; 
+                classeCibleDemoniste = null;
+                doitReactiverBoutonPourCibleDemoniste = false;
             }
             Debug.Log($"{completeTurnCount},{tourCompetenceDemonisteUtilisee}");
             if (completeTurnCount == tourCompetenceDemonisteUtilisee + 2)
@@ -250,15 +250,6 @@ public class TurnManager : MonoBehaviour
                 }
             }
 
-            if (completeTurnCount - tourCompetenceMoineUtilisee == 2)
-            {
-                classeCibleMoine = "";
-                PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
-                if (playerChoiceHandler != null)
-                {
-                    playerChoiceHandler.ReinitialiserSelectionForces();
-                }
-            }
             if (completeTurnCount == tourCompetenceDemonisteUtilisee + 1)
             {
                 Debug.Log("debut de la competence du demoniste");
@@ -268,6 +259,29 @@ public class TurnManager : MonoBehaviour
                     playerChoiceHandler.SetPlayerButtonActiveState(classeCibleDemoniste, false);
                 }
             }
+
+            if (completeTurnCount == tourCompetenceMoineUtilisee + 2)
+            {
+                classeCibleMoine = "";
+                PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+                if (playerChoiceHandler != null)
+                {
+                    playerChoiceHandler.ReinitialiserSelectionForces();
+                }
+            }
+
+            if (completeTurnCount == tourCompetenceMoineUtilisee + 1)
+            {
+                Debug.Log("debut de la competence du moine");
+                PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+                if (playerChoiceHandler != null && !string.IsNullOrEmpty(classeCibleMoine))
+                {
+                    playerChoiceHandler.ForcerSelectionBouton(classeCibleMoine);
+                }
+            }
+
+
+
 
         }
 
@@ -313,6 +327,11 @@ public class TurnManager : MonoBehaviour
             string currentPlayerName = selectClasseScript.PlayerNames[currentPlayerIndex];
             if (currentPlayerName == selectChefScript.GetNomChef())
             {
+                PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+                if (playerChoiceHandler != null)
+                {
+                    playerChoiceHandler.ViderSelectionJoueurs(); // Vide la sélection des joueurs
+                }
                 btnChoixChef.GetComponentInChildren<TMP_Text>().text = "Faire votre choix";
                 btnChoixChef.interactable = true;
             }
@@ -545,11 +564,7 @@ public class TurnManager : MonoBehaviour
                 if (selectedButtons.Count > 0)
                 {
                     classeCibleMoine = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
-                    PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
-                    if (playerChoiceHandler != null)
-                    {
-                        playerChoiceHandler.ForcerSelectionBouton(classeCibleMoine);
-                    }
+
                     Debug.Log($"Le Moine a forcé la sélection sur : {classeCibleMoine}");
                 }
                 Debug.Log("Le moine à amener un joueur à méditer");
@@ -569,7 +584,9 @@ public class TurnManager : MonoBehaviour
                     }
                     selectedButtons.Clear(); // Vider la liste des boutons sélectionnés
                     selectedButtonCount = 0; // Réinitialiser le compte des boutons sélectionnés
-                    UpdateConfirmButtonState(); // Mettre à jour l'état du bouton de confirmation
+                    UpdateConfirmButtonState(); // Mettre à jour l'état du bouton de
+                                                // 
+
                     isAssassinSkillUsedThisTurn = true;
 
                     // Enregistrez le tour actuel dans TourDepuisAssassina

@@ -9,7 +9,7 @@ public class PlayerChoiceHandler : MonoBehaviour
     public Button[] buttons; // Groupe des six boutons, un pour chaque joueur
     private int selectionnerBtn = 0; // Nombre de boutons sélectionnés
     private Color32 couleurOriginale; // Couleur originale des boutons
-    private Color32 couleurChangement = new Color32(255, 0, 0, 255); // Couleur pour indiquer la sélection
+    public Color32 couleurChangement = new Color32(255, 0, 0, 255); // Couleur pour indiquer la sélection
     public TextMeshProUGUI decompte; // Texte affichant le nombre de joueurs sélectionnés
     public Button Bouton_choix_finit; // Bouton pour confirmer le choix
     private Select_Classe selectClasseScript; // Accès aux scripts
@@ -49,11 +49,16 @@ public class PlayerChoiceHandler : MonoBehaviour
     {
         foreach (Button btn in buttons)
         {
+            selectionnerBtn = 0;
+            UpdateDecompteText();
             // Réinitialiser la couleur du bouton à la couleur originale
             // Vérifiez d'abord si le bouton ne doit pas rester désactivé à cause d'une autre logique
             if (!boutonsNePasReactiver.ContainsKey(btn) || !boutonsNePasReactiver[btn])
             {
                 btn.GetComponent<Image>().color = couleurOriginale;
+                btn.interactable = true;
+
+
             }
         }
     }
@@ -141,7 +146,28 @@ public class PlayerChoiceHandler : MonoBehaviour
         }
         ReinitialiserCouleurBoutons();
 
+        // Ajout pour réinitialiser l'état de sélection de tous les boutons
+        foreach (Button btn in buttons)
+        {
+            boutonEtat[btn] = false; // Mettre à jour l'état de sélection à false
+            btn.GetComponent<Image>().color = couleurOriginale; // Réinitialiser la couleur du bouton
+            selectionnerBtn--;
+        }
+
+        // Réinitialiser le compteur de boutons sélectionnés et mettre à jour le texte
+        selectionnerBtn = 0;
+        UpdateDecompteText();
+
+        // Assurez-vous que les boutons sont interactifs à nouveau si nécessaire
+        foreach (Button btn in buttons)
+        {
+            if (!boutonsNePasReactiver.ContainsKey(btn) || !boutonsNePasReactiver[btn])
+            {
+                btn.interactable = true;
+            }
+        }
     }
+
 
     public void SetPlayerButtonActiveState(string playerName, bool isActive)
     {
@@ -171,6 +197,7 @@ public class PlayerChoiceHandler : MonoBehaviour
         foreach (var button in boutonsNePasReactiver.Keys.ToList())
         {
             boutonsNePasReactiver[button] = false;
+            button.interactable = true;
         }
     }
 
@@ -203,6 +230,7 @@ public class PlayerChoiceHandler : MonoBehaviour
     }
     public void ReinitialiserSelectionForces()
     {
+
         foreach (var entry in boutonsSelectionForces)
         {
             if (entry.Value) // Si la sélection a été forcée par le Moine
@@ -210,11 +238,16 @@ public class PlayerChoiceHandler : MonoBehaviour
                 // Réinitialiser l'état à non sélectionné sans changer l'interactivité
                 boutonEtat[entry.Key] = false;
                 entry.Key.GetComponent<Image>().color = couleurOriginale;
-                selectionnerBtn--;
                 UpdateDecompteText();
             }
         }
         // Nettoyer après réinitialisation
         boutonsSelectionForces.Clear();
+    }
+
+    public void ViderSelectionJoueurs()
+    {
+
+        joueursSelectionnes.Clear();
     }
 }
