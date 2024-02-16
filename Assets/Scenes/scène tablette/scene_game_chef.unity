@@ -3691,7 +3691,6 @@ MonoBehaviour:
   yesButton: {fileID: 2137540719}
   noButton: {fileID: 2137540718}
   skillNameText: {fileID: 2137540717}
-  playerChoiceHandler: {fileID: 1349650829}
   classImages:
   - className: Guerrier
     classSprite: {fileID: 21300000, guid: fa007eee6f397dd4db5290a9acf7cc21, type: 3}
@@ -3715,6 +3714,7 @@ MonoBehaviour:
     classSprite: {fileID: 21300000, guid: 48b16939f8688e348b43e95ef9e8fcd8, type: 3}
   - className: Paladin
     classSprite: {fileID: 21300000, guid: 55a0d64dba6a9114e8eb7bad187e79fa, type: 3}
+  classeCibleMoine: 
 --- !u!4 &581436780
 Transform:
   m_ObjectHideFlags: 0
@@ -6520,6 +6520,9 @@ MonoBehaviour:
   - {fileID: 1090975886}
   - {fileID: 256861672}
   - {fileID: 1868033305}
+  couleurChangement:
+    serializedVersion: 2
+    rgba: 4278190335
   decompte: {fileID: 1183649853}
   Bouton_choix_finit: {fileID: 130594638}
 --- !u!4 &1349650830

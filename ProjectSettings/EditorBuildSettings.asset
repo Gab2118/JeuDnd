@@ -33,7 +33,7 @@ EditorBuildSettings:
     path: "Assets/Scenes/sc\xE8ne tablette/Scene_turn_TEST.unity"
     guid: 35b3178898e49554eac94cecc61def54
   - enabled: 1
-    path: "Assets/Scenes/sc\xE8ne tablette/scene_vide.unity"
+    path: "Assets/Scenes/sc\xE8ne tablette/scene_mission.unity"
     guid: bb2d64bbf8e80ab46a8342aaa966bc50
   - enabled: 1
     path: "Assets/Scenes/sc\xE8ne tablette/scene_choix_mission.unity"

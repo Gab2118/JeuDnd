@@ -75,9 +75,10 @@ public class TurnManager : MonoBehaviour
     private string classeCibleClerc;
     // Démoniste
     private string classeCibleDemoniste;
-    public string classeCibleMoine;
-    private bool doitReactiverBoutonPourCibleDemoniste = false;
+   private bool doitReactiverBoutonPourCibleDemoniste = false;
     private int tourCompetenceDemonisteUtilisee = 0;
+    // déclaration pour le moine
+    public string classeCibleMoine;
     private int tourCompetenceMoineUtilisee = 0;
 
 
@@ -119,12 +120,12 @@ public class TurnManager : MonoBehaviour
         }
         // void start page jeu principal
         InitializeClassColors(); // définie les couleurs de chaque clase de personnage ( couleur de nom)
-        InitializeClassImagesDictionary(); //fonctione pour associe une image pour chaque classe
+        InitializeClassImagesDictionary(); //fonction pour associe une image pour chaque classe
         InitializeSkillBank(); // fonction pour Initialiser la banque de compétences
         SetStartingPlayerAsChef(); // fonction faire débuter le chef en premier
         nextTurnButton.onClick.AddListener(OnNextTurnButtonClicked); // écouteur de clique pour le bouton tour suivant
         UpdateTurnTextAndImage(); // mettre à jour les text et images
-      
+        DontDestroyOnLoad(this);
     }
 
 
@@ -190,7 +191,7 @@ public class TurnManager : MonoBehaviour
         if (turnCounter >= selectClasseScript.PlayerNames.Count)
         {
             turnCounter = 0; // Réinitialiser le compteur de tours pour le prochain tour
-            completeTurnCount++; // Incrementer le compteur de tours complets
+            completeTurnCount++; // Incrémenter le compteur de tours complets
             Debug.Log("Classe Cible Démoniste: " + classeCibleDemoniste);
 
 
@@ -252,7 +253,7 @@ public class TurnManager : MonoBehaviour
 
             if (completeTurnCount == tourCompetenceDemonisteUtilisee + 1)
             {
-                Debug.Log("debut de la competence du demoniste");
+                Debug.Log("debut de la competence du démoniste");
                 PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
                 if (playerChoiceHandler != null)
                 {
@@ -281,7 +282,7 @@ public class TurnManager : MonoBehaviour
             }
 
 
-
+            LoadEmptyScene();
 
         }
 
@@ -372,7 +373,7 @@ public class TurnManager : MonoBehaviour
     // charger la scène suivante  À ABSOLUMENT GARDER DONC PAS TOUCHE PLEASE :)
     private void LoadEmptyScene()
     {
-        SceneManager.LoadScene("scene_vide");
+        SceneManager.LoadScene("scene_choix_mission");
     }
 
     // si le joueur accepte d'utilisé sa compétence
@@ -432,6 +433,14 @@ public class TurnManager : MonoBehaviour
             // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
 
+        }
+        if (currentPlayerClass == "Guerrier")
+        {
+            PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
+            if (playerChoiceHandler != null)
+            {
+                playerChoiceHandler.AddPlayerToSelected("Guerrier");
+            }
         }
 
         // NOTE : AJOUTER LES AUTRES CLASSES PLUS TARD

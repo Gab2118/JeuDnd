@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class PlayerChoiceHandler : MonoBehaviour
 {
@@ -245,9 +246,19 @@ public class PlayerChoiceHandler : MonoBehaviour
         boutonsSelectionForces.Clear();
     }
 
+    public void AddPlayerToSelected(string playerName)
+    {
+        if (!joueursSelectionnes.Contains(playerName))
+        {
+            joueursSelectionnes.Add(playerName);
+            Debug.Log("Selected Players: " + String.Join(", ", joueursSelectionnes));
+        }
+    }
+
     public void ViderSelectionJoueurs()
     {
 
         joueursSelectionnes.Clear();
     }
+
 }
