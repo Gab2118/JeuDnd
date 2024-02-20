@@ -22,12 +22,14 @@ public class Select_role : MonoBehaviour
     public TMP_Text textRole;
     private Select_Classe selectClasseScript; // Accéder aux classes et noms
     private Select_chef selectChefScript; // Accéder au nom du chef
+    private string classeDuTyran = ""; // Pour stocker la classe du joueur ayant le rôle du Tyran
+
 
     // Bank des rôles avec descriptions
     private Role[] RoleBank = {
         new Role("L'Élu", "Vous êtes l'élu, vous êtes au courant de l'identité du tyran et de l'occuliste, Par contre , attention à nous pas vous dévoiler, ces dernier peuvent vous assassiner."),
         new Role("Le Tyran", "Vous êtes le Tyran,vous devez faire échouer la quête et trouver l'élu afin de l'assasiner. Un occultiste vous adorant est cacher mais vous ne savez pas son identité. Soyez prudent"),
-        new Role("L'Occultiste", "Vous êtes l'occultiste, Vous savez qui est le Tyran et devez l'aider à faire échouer la quête.Le Tyran ne connait pas votre identité."),
+        new Role("L'Occultiste", "Vous êtes l'occultiste, Vous savez qui est le Tyran et devez l'aider à faire échouer la quête. Le Tyran ne connait pas votre identité. Le tyran est : "),
         new Role("Aventurier", "Vous êtes un aventurier.Le rôle de l'aventurier est d'aider l'équipe à réussir la quête de l'artefact. Vous ne savez pas qui est l'élu ni l'occultiste ni le tyran. Faite votre possible pour aider l'Élu à réussir les missions."),
         new Role("Aventurier", "Vous êtes un aventurier.Le rôle de l'aventurier est d'aider l'équipe à réussir la quête de l'artefact. Vous ne savez pas qui est l'élu ni l'occultiste ni le tyran. Faite votre possible pour aider l'Élu à réussir les missions."),
         new Role("Aventurier", "Vous êtes un aventurier.Le rôle de l'aventurier est d'aider l'équipe à réussir la quête de l'artefact. Vous ne savez pas qui est l'élu ni l'occultiste ni le tyran. Faite votre possible pour aider l'Élu à réussir les missions.")
@@ -60,7 +62,18 @@ public class Select_role : MonoBehaviour
         foreach (string playerName in selectClasseScript.PlayerNames)
         {
             Role playerRole = GetRandomRole(availableRoles);
+            if (playerRole.name == "Le Tyran")
+            {
+                classeDuTyran = playerName; // Ici, assurez-vous que playerName représente bien la classe du joueur
+            }
             playerRoles.Add(playerRole);
+        }
+        foreach (Role role in playerRoles)
+        {
+            if (role.name == "L'Occultiste")
+            {
+                role.description += classeDuTyran;
+            }
         }
 
         // Modifier ici pour n'afficher que le nom du rôle
