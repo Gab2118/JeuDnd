@@ -1,113 +1,48 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using static SocketManager;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
-// cE SCRIPT À POUR BUT DE SÉLECTIONNER LE CHEF PARMIT LES SIX JOUEUR ET LA FONCTION "indexChefPlus" PERMET DE CHANGER LE CHEF POUR LE SUIVANT
-public class Select_chef : MonoBehaviour
+public class Select_Chef : MonoBehaviour
 {
-    public void SetNomChef(string nouveauChef)
+    public TMP_Text text_chef;
+
+    private void OnEnable()
     {
-        nom_chef = nouveauChef;
-        // Mise à jour de l'affichage du chef si nécessaire...
+        SocketManager.OnChefAssigned += UpdateChefUI;
     }
-    public TMP_Text textField;
-    private List<string> banqueChef; // liste des chef trouver 
-
-    private string nom_chef; // stocker le role qui sera le chef
-    private int index_chef = -1;
-
-    // Start est appelé avant la première mise à jour de frame
-    void Start()
+    private IEnumerator Start()
     {
-
-        // Trouve l'instance de Select_Classe et récupère la liste des noms des classe
-        Select_Classe Select_Classe = FindObjectOfType<Select_Classe>();
-        if (Select_Classe != null)
-        {
-            banqueChef = new List<string>(Select_Classe.PlayerNames);
-            foreach (string nom in banqueChef)
-            {
-                Debug.Log("Nom du joueur dans banqueChef: " + nom);
-            }
-        }
-        else
-        {
-            Debug.LogError("Select_Classe not found!");
-        }
-        DontDestroyOnLoad(this);
-        StartCoroutine(ChangeTextPeriodically());
+        yield return new WaitForSeconds(1);
+        StartCoroutine(BeginSceneAfterDelay(4));
     }
-
-    // Coroutine pour défiler le texte de chaque mot parmit la liste des classes tirer
-    IEnumerator ChangeTextPeriodically()
-    {
-        int iterations = 0;
-        while (iterations < 5 / 0.05f) // le faire pendant 5 seconde
-        {
-            if (banqueChef != null && banqueChef.Count > 0)
-            {
-                index_chef = Random.Range(0, banqueChef.Count);
-                nom_chef = banqueChef[index_chef]; // Tirer un mot de la banque
-                textField.text = nom_chef; // Assigner nom_chef au mot tirer
-
-            }
-            else
-            {
-                Debug.LogError("banqueChef is null or empty!");
-            }
-
-            yield return new WaitForSeconds(0.05f); // Attend 0.05 seconde avant de continuer
-            iterations++;
-        }
-
-        AfficherChef();
-    }
-
-
-    void AfficherChef()
-    {
-        Debug.Log("Le chef est : " + nom_chef);
-        ChangerVersSceneChoixChef();
-    }
-
-
-    // changer pour le prochain chef
-    public void indexChefPlus()
-    {
-        if (banqueChef != null && banqueChef.Count > 0)
-        {
-            // Incrémente index_chef, mais assurez-vous qu'il reste dans les limites de la liste
-            index_chef = (index_chef + 1) % banqueChef.Count;
-
-            // Mettre à jour nom_chef avec le nouveau chef
-            nom_chef = banqueChef[index_chef];
-
-            // Afficher le nouveau chef dans la console
-            Debug.Log("Le nouveau chef est : " + nom_chef);
-        }
-        else
-        {
-            Debug.LogError("banqueChef is null or empty!");
-        }
-    }
-
-    public string GetNomChef()
-    {
-        return nom_chef;
-    }
-
-    private void ChangerVersSceneChoixChef()
-    {
-        Invoke("ChargerSceneChoixRole", 5f);
-    }
-    private void ChargerSceneChoixRole()
+    private IEnumerator BeginSceneAfterDelay(float delay)
     {
 
-
-        SceneManager.LoadScene("Scene_choix_role");
+        yield return new WaitForSeconds(delay); // Attend 10 secondes
+        SceneManager.LoadScene("Scene_choix_role"); // Charge la scï¿½ne souhaitï¿½e
     }
 
+    private void OnDisable()
+    {
+        SocketManager.OnChefAssigned -= UpdateChefUI;
+    }
+
+ private void UpdateChefUI(PlayerInfo playerInfo)
+{
+  // Recherche du joueur qui est le chef
+PlayerInfo chef = SocketManager.Instance.playerInfos.Find(p => p.isChief); 
+
+if (chef != null)
+{
+    Debug.Log("Nom du Chef: " + chef.playerClass); // Log pour vÃ©rification
+    text_chef.text = $"Le chef est : {chef.playerClass}"; // Mise Ã  jour du texte avec le nom du chef
+}
+else
+{
+    Debug.LogError("Les informations du chef ne sont pas disponibles.");
+}
+}
 
 }

@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 public class PlayerChoiceHandler : MonoBehaviour
 {
@@ -22,8 +21,8 @@ public class PlayerChoiceHandler : MonoBehaviour
 
     void Start()
     {
-        selectClasseScript = FindObjectOfType<Select_Classe>();
-        List<string> playerClasses = selectClasseScript.GetPlayerNames();
+        // Correction: Utilisation de SocketManager pour récupérer les noms des joueurs
+        var playerNames = SocketManager.Instance.playerInfos.Select(info => info.playerName).ToList();
 
         boutonEtat = new Dictionary<Button, bool>();
         couleurOriginale = buttons[0].GetComponent<Image>().color;
@@ -33,9 +32,9 @@ public class PlayerChoiceHandler : MonoBehaviour
             boutonEtat.Add(buttons[i], false);
             int buttonIndex = i;
             buttons[i].onClick.AddListener(() => BoutonCliquer(buttonIndex));
-            if (i < playerClasses.Count)
+            if (i < playerNames.Count)
             {
-                buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = playerClasses[i];
+                buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = playerNames[i];
             }
             else
             {
@@ -43,7 +42,7 @@ public class PlayerChoiceHandler : MonoBehaviour
             }
         }
         UpdateDecompteText();
-        Bouton_choix_finit.onClick.AddListener(AfficherJoueursSelectionnes);
+        Bouton_choix_finit.onClick.AddListener(() => ConfirmerChoix());
         Bouton_choix_finit.interactable = false;
     }
     public void ReinitialiserCouleurBoutons()
@@ -128,6 +127,16 @@ public class PlayerChoiceHandler : MonoBehaviour
             }
         }
     }
+
+    // Méthode pour confirmer le choix et envoyer au serveur
+    void ConfirmerChoix()
+    {
+        // Exemple: Envoyer les joueurs sélectionnés au serveur
+        var selectedPlayerIds = joueursSelectionnes.Select(name => SocketManager.Instance.playerInfos.FirstOrDefault(info => info.playerName == name)?.playerId).Where(id => id != null).ToList();
+        SocketManager.Instance.SendData("confirmSelection", JsonUtility.ToJson(new { selectedPlayerIds }));
+        AfficherJoueursSelectionnes();
+    }
+
 
     void UpdateDecompteText()
     {
@@ -251,7 +260,7 @@ public class PlayerChoiceHandler : MonoBehaviour
         if (!joueursSelectionnes.Contains(playerName))
         {
             joueursSelectionnes.Add(playerName);
-            Debug.Log("Selected Players: " + String.Join(", ", joueursSelectionnes));
+            Debug.Log("Selected Players: " + string.Join(", ", joueursSelectionnes));
         }
     }
 

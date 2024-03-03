@@ -13,10 +13,10 @@ public class CarouselControllerCarrousel_role : MonoBehaviour
     private int currentIndex = 0;
     // Les rôle et leurs description
     private string[] titre_role = {
-        "L'Aventurier",
+        "Aventurier",
         "L'Élu",
         "Le Tyran",
-        "l'Occultiste",
+        "Le fanatique",
       
     };
     private string[] descriptions_role = {

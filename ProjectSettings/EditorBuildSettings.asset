@@ -44,4 +44,7 @@ EditorBuildSettings:
   - enabled: 1
     path: "Assets/Scenes/sc\xE8ne tablette/scene_result.unity"
     guid: c9676f68765b5de44b9bdb0107b4283a
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: d613e93619721144a9252acb36ca4748, type: 2}
+    com.unity.adaptiveperformance.samsung.android.provider_settings: {fileID: 11400000, guid: b29e44e854744b74eaf233b928268f5c, type: 2}
+    com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 35d7600c9d52c484981af51dd4ad4bfb, type: 2}

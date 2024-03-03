@@ -174,7 +174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 724132256}
-  sceneToLoad: presentation
+  sceneToLoad: Scene_Select_classe
   sceneOnVideoEnd: Scene_attente
 --- !u!114 &255959189
 MonoBehaviour:

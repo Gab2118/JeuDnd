@@ -16,32 +16,32 @@ public class CarouselController : MonoBehaviour
     private string[] titles = {
         "Guerrier",
         "Barbare",
-        "Sorcière",
-        "Démoniste",
+        "Sorciï¿½re",
+        "Dï¿½moniste",
         "Barde",
         "Clerc",
         "Moine",
-        "Nécromancien",
-        "Rôdeur",
+        "Nï¿½cromancien",
+        "Rï¿½deur",
         "Assassin",
         "Paladin"
     };
     private string[] descriptions = {
-        "Le guerrier peut rejoindre un groupe de mission et ainsi choisir de faire réussir ou échouer (deux minimum).",
-        "On ne sait pas encore.",// à revoir
-        "La sorcière peut apercevoir le choix d'une personne pour la mission en cour.",
-        "Le démoniste lance une malédiction qui empêche un joueur de partir à la prochaine mission.", // à revoir
-        "Le barde peut Annuler le résultat d'une mission.",
-        "La clerc permet de donner une bénédiction pour changer le chef de camp pour la prochaine mission.",
-        "Le moine décide d'amèner une personne méditer avec soi, ce dernier ne peut participer à la mission du jour.",  // à revoir
-        "Le démoniste invoque des zombies.Lancer un dé 20 (1 jusqu'à 10 il perd le contrôle des zombies et ceux-ci donnent une carte échec, 11 jusqu'à 20 garde le contraire).",
-        "Le rôdeur peut envoyez un loup espionner 3 joueur de votre choix. Le loup hurlera si l'un des joueurs n'est pas de votre camps",
-        "L'assassin peut empêche le joueur d'activer sa compétence lors de la prochaine mission.",
-        "En échange de révêler votre identité, annuler le résultat d'une manche de votre choix et cette manche ne sera pas rejouer."
+        "Le guerrier peut rejoindre un groupe de mission et ainsi choisir de faire rï¿½ussir ou ï¿½chouer (deux minimum).",
+        "On ne sait pas encore.",// ï¿½ revoir
+        "La sorciï¿½re peut apercevoir le choix d'une personne pour la mission en cour.",
+        "Le dï¿½moniste lance une malï¿½diction qui empï¿½che un joueur de partir ï¿½ la prochaine mission.", // ï¿½ revoir
+        "Le barde peut Annuler le rï¿½sultat d'une mission.",
+        "La clerc permet de donner une bï¿½nï¿½diction pour changer le chef de camp pour la prochaine mission.",
+        "Le moine dï¿½cide d'amï¿½ner une personne mï¿½diter avec soi, ce dernier ne peut participer ï¿½ la mission du jour.",  // ï¿½ revoir
+        "Le dï¿½moniste invoque des zombies.Lancer un dï¿½ 20 (1 jusqu'ï¿½ 10 il perd le contrï¿½le des zombies et ceux-ci donnent une carte ï¿½chec, 11 jusqu'ï¿½ 20 garde le contraire).",
+        "Le rï¿½deur peut envoyez un loup espionner 3 joueur de votre choix. Le loup hurlera si l'un des joueurs n'est pas de votre camps",
+        "L'assassin peut empï¿½che le joueur d'activer sa compï¿½tence lors de la prochaine mission.",
+        "En ï¿½change de rï¿½vï¿½ler votre identitï¿½, annuler le rï¿½sultat d'une manche de votre choix et cette manche ne sera pas rejouer."
     };
 
 
-    // Écoute de clique des flèches du carrousel
+    // ï¿½coute de clique des flï¿½ches du carrousel
     void Start()
     {
         UpdateUI();
@@ -49,7 +49,7 @@ public class CarouselController : MonoBehaviour
         rightArrow.onClick.AddListener(NextClass);
     }
 
-    // Mettre à jour les informations afficher
+    // Mettre ï¿½ jour les informations afficher
     void UpdateUI()
     {
         titleText.text = titles[currentIndex];
@@ -63,7 +63,7 @@ public class CarouselController : MonoBehaviour
         currentIndex = (currentIndex + 1) % titles.Length;
         UpdateUI();
     }
-    // Aller à la classe précédente
+    // Aller ï¿½ la classe prï¿½cï¿½dente
     public void PreviousClass()
     {
         currentIndex--;

@@ -29,7 +29,7 @@ public class ChangeSceneOnVideoEnd : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name == sceneOnVideoEnd)
         {
-            SceneManager.LoadScene("presentation");
+            SceneManager.LoadScene("Scene_Select_classe");
         }
         else
         {
