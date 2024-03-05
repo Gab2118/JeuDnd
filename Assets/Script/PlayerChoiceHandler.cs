@@ -22,7 +22,7 @@ public class PlayerChoiceHandler : MonoBehaviour
     void Start()
     {
         // Correction: Utilisation de SocketManager pour récupérer les noms des joueurs
-        var playerNames = SocketManager.Instance.playerInfos.Select(info => info.playerName).ToList();
+        var playerClass = SocketManager.Instance.playerInfos.Select(info => info.playerClass).ToList();
 
         boutonEtat = new Dictionary<Button, bool>();
         couleurOriginale = buttons[0].GetComponent<Image>().color;
@@ -32,9 +32,9 @@ public class PlayerChoiceHandler : MonoBehaviour
             boutonEtat.Add(buttons[i], false);
             int buttonIndex = i;
             buttons[i].onClick.AddListener(() => BoutonCliquer(buttonIndex));
-            if (i < playerNames.Count)
+            if (i < playerClass.Count)
             {
-                buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = playerNames[i];
+                buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = playerClass[i];
             }
             else
             {
@@ -86,21 +86,21 @@ public class PlayerChoiceHandler : MonoBehaviour
     {
         Button btn = buttons[buttonIndex];
         bool estSelectionne = boutonEtat[btn];
-        string nomJoueur = btn.GetComponentInChildren<TextMeshProUGUI>().text;
+        string playerClass = btn.GetComponentInChildren<TextMeshProUGUI>().text;
 
         if (!estSelectionne && selectionnerBtn < 2)
         {
             selectionnerBtn++;
             boutonEtat[btn] = true;
             btn.GetComponent<Image>().color = couleurChangement;
-            joueursSelectionnes.Add(nomJoueur);
+            joueursSelectionnes.Add(playerClass);
         }
         else if (estSelectionne)
         {
             selectionnerBtn--;
             boutonEtat[btn] = false;
             btn.GetComponent<Image>().color = couleurOriginale;
-            joueursSelectionnes.Remove(nomJoueur);
+            joueursSelectionnes.Remove(playerClass);
         }
 
         UpdateDecompteText();
@@ -135,6 +135,20 @@ public class PlayerChoiceHandler : MonoBehaviour
         var selectedPlayerIds = joueursSelectionnes.Select(name => SocketManager.Instance.playerInfos.FirstOrDefault(info => info.playerName == name)?.playerId).Where(id => id != null).ToList();
         SocketManager.Instance.SendData("confirmSelection", JsonUtility.ToJson(new { selectedPlayerIds }));
         AfficherJoueursSelectionnes();
+        ActiverBoutonPourChef();
+    }
+
+    void ActiverBoutonPourChef()
+    {
+        // Désactive le bouton pour tous, sauf pour le chef, lors de la confirmation d'un choix.
+        // Remarque: Cela suppose que le bouton doit être désactivé après un choix confirmé.
+        if (!SocketManager.Instance.IsPlayerChief(SocketManager.Instance.Socketid))
+        {
+            TurnManager.Instance.nextTurnButton.interactable = true; // Désactive le bouton pour les joueurs qui ne sont pas le chef.
+            TurnManager.Instance.readyToggle.interactable = true;
+
+        }
+        // Pas besoin d'activer explicitement pour le chef ici, car cela a été géré initialement.
     }
 
 
@@ -219,12 +233,12 @@ public class PlayerChoiceHandler : MonoBehaviour
             if (button.GetComponentInChildren<TextMeshProUGUI>().text == playerName)
             {
 
-                string nomJoueur = button.GetComponentInChildren<TextMeshProUGUI>().text;
+                string playerClass = button.GetComponentInChildren<TextMeshProUGUI>().text;
                 // Forcer la sélection et le changement de couleur
                 boutonEtat[button] = true; // Simuler une sélection
                 button.GetComponent<Image>().color = couleurChangement; // Changer la couleur
                 boutonsSelectionForces[button] = true; // Marquer comme sélectionné par le Moine
-                joueursSelectionnes.Add(nomJoueur);
+                joueursSelectionnes.Add(playerClass);
 
 
 

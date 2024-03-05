@@ -1,4 +1,4 @@
- using UnityEngine;
+using UnityEngine;
 using KyleDulce.SocketIo;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,8 +11,11 @@ public class SocketManager : MonoBehaviour
     public static OnPlayerInfoUpdated OnChefAssigned;
     public static OnPlayerInfoUpdated OnRoleAssigned;
 
+
+
+
     public static SocketManager Instance { get; private set; }
-    private readonly string serverUrl = "ws://10.1.180.146:3006";
+    private readonly string serverUrl = "ws://10.1.180.30:3006";
     private Socket _socket;
     private bool isConnected = false;
     private readonly float reconnectDelay = 5f;
@@ -54,6 +57,20 @@ public class SocketManager : MonoBehaviour
 
     public List<PlayerInfo> playerInfos = new List<PlayerInfo>();
     public string currentChefId;
+
+  
+
+
+    void Start()
+    {
+        // Assurez-vous d'avoir une référence à votre Socket correctement initialisée ici
+        _socket.on("changeScene", (E) => {
+            // Convertir E en une chaîne contenant le nom de la scène
+            string sceneName = E.ToString();
+            // Utiliser SceneManager pour changer de scène
+            SceneManager.LoadScene(sceneName);
+        });
+    }
 
     [System.Serializable]
     public class ChefAssignedData
@@ -149,6 +166,12 @@ public class SocketManager : MonoBehaviour
             Debug.LogError("Pas de role data deserialize");
         }
     }
+    public bool IsPlayerChief(string playerId)
+    {
+        var player = playerInfos.Find(p => p.playerId == playerId);
+        return player != null && player.isChief;
+    }
+
 
     void OnChefAssignedReceived(string data)
     {
@@ -268,5 +291,21 @@ public class SocketManager : MonoBehaviour
             _socket.disconnect();
             _socket.disableSocket();
         }
+    }
+
+    public void SendPlayerReadyState(bool isReady)
+    {
+        // Construction d'un simple objet JSON pour l'envoi
+        var data = new Dictionary<string, bool> {
+        { "isReady", isReady }
+    };
+
+        // Convertir en JSON
+        string jsonData = JsonUtility.ToJson(data);
+        Debug.Log(jsonData);
+
+        // Envoyer au serveur
+        // Assurez-vous que votre instance socket est bien connectée et que le nom d'événement correspond à celui attendu côté serveur
+        _socket.emit("playerReady", jsonData);
     }
 }

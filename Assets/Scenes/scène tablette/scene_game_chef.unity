@@ -3744,9 +3744,9 @@ MonoBehaviour:
     classSprite: {fileID: 21300000, guid: fa007eee6f397dd4db5290a9acf7cc21, type: 3}
   - className: Barbare
     classSprite: {fileID: 21300000, guid: e966078ea2021c74097cf5b056eecd18, type: 3}
-  - className: "Sorci\xE8re"
+  - className: Sorciere
     classSprite: {fileID: 21300000, guid: 5be23edd6fb13914ca1c269b062edd80, type: 3}
-  - className: "D\xE9moniste"
+  - className: Demoniste
     classSprite: {fileID: 21300000, guid: 051ae6785a03db6489af83943635b65d, type: 3}
   - className: Barde
     classSprite: {fileID: 21300000, guid: df162de86f3453747a2015125474a073, type: 3}
@@ -3754,15 +3754,16 @@ MonoBehaviour:
     classSprite: {fileID: 21300000, guid: 7257ba377fe632b479275f05bf6258e3, type: 3}
   - className: Moine
     classSprite: {fileID: 21300000, guid: ff126ea53b3402547a438d95946cc12a, type: 3}
-  - className: "N\xE9cromancien"
+  - className: Necromancien
     classSprite: {fileID: 21300000, guid: d8f438ab2d22d004fa2c3fdc1ddf841e, type: 3}
-  - className: "R\xF4deur"
+  - className: Rodeur
     classSprite: {fileID: 21300000, guid: 0d806ed159600a64d98b251c06369dac, type: 3}
   - className: Assassin
     classSprite: {fileID: 21300000, guid: 48b16939f8688e348b43e95ef9e8fcd8, type: 3}
   - className: Paladin
     classSprite: {fileID: 21300000, guid: 55a0d64dba6a9114e8eb7bad187e79fa, type: 3}
   classeCibleMoine: 
+  readyToggle: {fileID: 2041131211}
 --- !u!4 &581436780
 Transform:
   m_ObjectHideFlags: 0
@@ -9639,7 +9640,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1 &2044454079
 GameObject:
   m_ObjectHideFlags: 0

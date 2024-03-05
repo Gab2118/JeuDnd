@@ -16,6 +16,7 @@ public class TurnManager : MonoBehaviour
     public TMP_Text skillDescriptionText; // description de la comp�tence
     public Image classImageDisplay; // image utilis� pour afficher l'image de chaque classe (les sprites des classes)
     public Button nextTurnButton; // bouton prochain tour
+    public static TurnManager Instance { get; private set; } //
 
     // Pour la gestion des couleurs des boutons de choix pour cible et ce qui � rapport avec le Panel_competence_choix_joueur
     public GameObject panelCompetenceChoixJoueur;
@@ -84,9 +85,10 @@ public class TurnManager : MonoBehaviour
 
 
 
+    // les déclaration pour tout ce qui est joueur is ready
+    public Toggle readyToggle;
 
-
-
+    public bool isReady = false;
 
 
     void Start()
@@ -95,7 +97,7 @@ public class TurnManager : MonoBehaviour
         selectChefScript = FindObjectOfType<Select_Chef>(); // recherche dans la scene le script select_chef
         selectRoleScript = FindObjectOfType<Select_Role>(); // recherche dans la scene le script select_role
         selectClasseScript = FindObjectOfType<Select_Classe>(); // recherche dans la scene le script select_classe
-
+        InitializeTurnManager();
         // void start du panel_competence
         yesButton.onClick.AddListener(OnYesButtonClicked); // �couteur de clique du bouton oui
         noButton.onClick.AddListener(OnNoButtonClicked); // �couteur de clique du bouton non
@@ -125,6 +127,16 @@ public class TurnManager : MonoBehaviour
             // lancer la fonction
             button.onClick.AddListener(() => OnChoiceButtonClicked(button));
         }
+
+        readyToggle.interactable = true;
+
+        if (readyToggle != null)
+        {
+            readyToggle.onValueChanged.AddListener(OnReadyToggleChanged);
+        }
+
+
+
         // void start page jeu principal
         InitializeClassColors(); // d�finie les couleurs de chaque clase de personnage ( couleur de nom)
         InitializeClassImagesDictionary(); //fonction pour associe une image pour chaque classe
@@ -133,7 +145,58 @@ public class TurnManager : MonoBehaviour
         nextTurnButton.onClick.AddListener(OnNextTurnButtonClicked); // �couteur de clique pour le bouton tour suivant
         UpdateTurnTextAndImage(); // mettre � jour les text et images
         DontDestroyOnLoad(this);
+
     }
+
+    private void InitializeTurnManager()
+    {
+        // Supposons que vous avez une méthode dans SocketManager qui peut vérifier si le joueur actuel est le chef.
+        // Cette méthode pourrait ressembler à `bool IsPlayerChief(string playerId)`
+        // Et vous avez un moyen d'obtenir l'ID du joueur actuel, par exemple, `SocketManager.Instance.Socketid` ou similaire.
+
+        // Désactivez le bouton pour le chef au début.
+        if (SocketManager.Instance.IsPlayerChief(SocketManager.Instance.Socketid))
+        {
+            nextTurnButton.interactable = false; // Désactive le bouton si le joueur actuel est le chef.
+            readyToggle.interactable = false;
+        }
+        else
+        {
+            nextTurnButton.interactable = true; // Assure que le bouton est activé pour les joueurs qui ne sont pas le chef.
+            readyToggle.interactable = true; // Active le "readyToggle".
+        }
+
+        // Continuez ici avec d'autres initialisations pour votre gestionnaire de tour.
+    }
+
+    void OnReadyToggleChanged(bool isReadyState)
+    {
+        isReady = isReadyState;
+        if (isReady == true)
+        {
+
+            Debug.Log("Le joueur est prêt.");
+            readyToggle.interactable = false;
+        }
+        else
+        {
+          
+            Debug.Log("Le joueur n'est plus prêt.");
+        }
+
+
+            SocketManager.Instance.SendPlayerReadyState(isReady);
+
+    }
+
+    void OnToggleChanged(bool isReady)
+    {
+        Debug.Log($"Le toggle est maintenant {(isReady ? "actif" : "inactif")}");
+
+        // Envoyer l'état du toggle au serveur Node.js
+        SocketManager.Instance.SendPlayerReadyState(isReady);
+    }
+
 
 
     // initialiser les couleur pour chaque classe
@@ -141,13 +204,13 @@ public class TurnManager : MonoBehaviour
     {
         classColors.Add("Guerrier", Color.red);
         classColors.Add("Barbare", Color.blue);
-        classColors.Add("Sorci�re", Color.magenta);
-        classColors.Add("D�moniste", Color.black);
+        classColors.Add("Sorciere", Color.magenta);
+        classColors.Add("Demoniste", Color.black);
         classColors.Add("Barde", Color.green);
         classColors.Add("Clerc", Color.yellow);
         classColors.Add("Moine", Color.gray);
-        classColors.Add("N�cromancien", Color.cyan);
-        classColors.Add("R�deur", Color.white);
+        classColors.Add("Necromancien", Color.cyan);
+        classColors.Add("Rodeur", Color.white);
         classColors.Add("Assassin", new Color(1f, 0.5f, 0)); // Orange
         classColors.Add("Paladin", Color.white);
     }
@@ -166,17 +229,17 @@ public class TurnManager : MonoBehaviour
     // banque de donn�e des classes reli� � leurs comp�tences et leurs descriptions
     private void InitializeSkillBank()
     {
-        skillBank.Add("Guerrier", new Skill { skillName = "Leadership", description = "Votre comp�tences vous permet de rejoindre un groupe de mission et ainsi d'y aller � trois. La majorit� l'emporte." });
-        skillBank.Add("Barbare", new Skill { skillName = "Rage int�grante", description = "On ne sait pas encore ce qu'il peut faire." });
-        skillBank.Add("Sorci�re", new Skill { skillName = "Vision secr�te", description = "Votre comp�tence vous permet d'apercevoir le choix de quelqu'un de la mission actuel." });
-        skillBank.Add("D�moniste", new Skill { skillName = "Mal�diction sur la vie", description = "Votre comp�tence vous permet de lancer une mal�diction sur un joueur, il ne pourra pas participer" });
-        skillBank.Add("Barde", new Skill { skillName = "Musique de la m�moire", description = "Annule le r�sultat d'une mission." });
-        skillBank.Add("Clerc", new Skill { skillName = "D�mocratie pur", description = "Donner une b�n�diction pour changer le chef de camp du jour m�me." });
-        skillBank.Add("Moine", new Skill { skillName = "Relaxation", description = "Am�ne une personne m�diter avec toi, ce dernier ne peut participer � la mission du jour." });
-        skillBank.Add("N�cromancien", new Skill { skillName = "Zombieland", description = "Lance un d� 20 (1 jusqu'� 10 il perd le contr�le des zombies et ceux-ci donnent une carte �chec) (11 jusqu'� 20 garde le contr�le et le contraire se produit)." });
-        skillBank.Add("R�deur", new Skill { skillName = "Chasse de loup", description = "On ne sait pas encore." });
-        skillBank.Add("Assassin", new Skill { skillName = "La discretion", description = "Emp�che le joueur d'activer sa comp�tence." });
-        skillBank.Add("Paladin", new Skill { skillName = "Jet de lumi�re", description = "En �change de d�voiler son r�le, annule le r�sultat d'une manche. ON NE REFAIT PAS CETTE MANCHE." });
+        skillBank.Add("Guerrier", new Skill { skillName = "Leadership", description = "Votre comp\u00E9tences vous permet de rejoindre un groupe de mission et ainsi d'y aller \u00E0 trois. La majorit\u00E9 l'emporte." });
+        skillBank.Add("Barbare", new Skill { skillName = "Rage int\u00E9grante", description = "On ne sait pas encore ce qu'il peut faire." });
+        skillBank.Add("Sorciere", new Skill { skillName = "Vision secr\u00E8te", description = "Votre comp\u00E9tence vous permet d'apercevoir le choix de quelqu'un de la mission actuelle." });
+        skillBank.Add("Demoniste", new Skill { skillName = "Mal\u00E9diction sur la vie", description = "Votre comp\u00E9tence vous permet de lancer une mal\u00E9diction sur un joueur, il ne pourra pas participer." });
+        skillBank.Add("Barde", new Skill { skillName = "Musique de la m\u00E9moire", description = "Annule le r\u00E9sultat d'une mission." });
+        skillBank.Add("Clerc", new Skill { skillName = "D\u00E9mocratie pure", description = "Donner une b\u00E9n\u00E9diction pour changer le chef de camp du jour m\u00EAme." });
+        skillBank.Add("Moine", new Skill { skillName = "Relaxation", description = "Am\u00E8ne une personne m\u00E9diter avec toi, ce dernier ne peut participer \u00E0 la mission du jour." });
+        skillBank.Add("Necromancien", new Skill { skillName = "Zombieland", description = "Lance un d\u00E9 20 (1 jusqu'\u00E0 10 il perd le contr\u00F4le des zombies et ceux-ci donnent une carte \u00E9chec) (11 jusqu'\u00E0 20 garde le contr\u00F4le et le contraire se produit)." });
+        skillBank.Add("Rodeur", new Skill { skillName = "Chasse de loup", description = "On ne sait pas encore." });
+        skillBank.Add("Assassin", new Skill { skillName = "La discr\u00E9tion", description = "Empèche le joueur d'activer sa comp\u00E9tence." });
+        skillBank.Add("Paladin", new Skill { skillName = "Jet de lumi\u00E8re", description = "En \u00E9change de d\u00E9voiler son r\u00F4le, annule le r\u00E9sultat d'une manche. ON NE REFAIT PAS CETTE MANCHE." });
     }
 
 
@@ -187,29 +250,22 @@ public class TurnManager : MonoBehaviour
         var chefInfo = SocketManager.Instance.playerInfos.Find(player => player.playerId == chefId);
         string chefName = chefInfo != null ? chefInfo.playerName : "Chef inconnu";
 
-        for (int i = 0; i < SocketManager.Instance.playerInfos.Count; i++)
-        {
-            if (SocketManager.Instance.playerInfos[i].playerId == chefId)
-            {
-                currentPlayerIndex = i;
-                break;
-            }
-        }
+       
     }
 
     //fonction � chaque fois que on clique sur tour suivant
     private void OnNextTurnButtonClicked()
     {
         // Incrementer l'index du joueur actuel et le compteur de tour
-        currentPlayerIndex = (currentPlayerIndex + 1) % SocketManager.Instance.playerInfos.Count;
+  
         turnCounter++;
 
         // Verifier si tous les joueurs ont jou� une fois
-        if (turnCounter >= SocketManager.Instance.playerInfos.Count)
-        {
+      
+       
             turnCounter = 0; // R�initialiser le compteur de tours pour le prochain tour
             completeTurnCount++; // Incr�menter le compteur de tours complets
-            Debug.Log("Classe Cible D�moniste: " + classeCibleDemoniste);
+            Debug.Log("Classe Cible Demoniste: " + classeCibleDemoniste);
 
 
             // V�rifier si l'assassin a utilis� sa comp�tence ce tour
@@ -257,7 +313,7 @@ public class TurnManager : MonoBehaviour
 
             if (completeTurnCount == tourCompetenceDemonisteUtilisee + 1)
             {
-                Debug.Log("debut de la competence du d�moniste");
+                Debug.Log("debut de la competence du demoniste");
                 PlayerChoiceHandler playerChoiceHandler = FindObjectOfType<PlayerChoiceHandler>();
                 if (playerChoiceHandler != null)
                 {
@@ -286,9 +342,9 @@ public class TurnManager : MonoBehaviour
             }
 
 
-            LoadEmptyScene();
+            //LoadEmptyScene();
 
-        }
+        
 
 
         UpdateTurnTextAndImage(); // Mettre � jour l'affichage pour le prochain tour
@@ -330,7 +386,8 @@ public class TurnManager : MonoBehaviour
 
             // quand cest le tour du chef changer le text du btn : Btn_choix_chef
             string currentPlayerId = SocketManager.Instance.playerInfos[currentPlayerIndex].playerId; // Acc�dez � l'ID du joueur actuel
-            if (currentPlayerId == SocketManager.Instance.currentChefId) // Comparez avec l'ID du chef
+
+            if (SocketManager.Instance.IsPlayerChief(currentPlayerId)) // Comparez avec l'ID du chef
             {
                 btnChoixChef.GetComponentInChildren<TMP_Text>().text = "Faire votre choix";
                 btnChoixChef.interactable = true;
@@ -346,18 +403,19 @@ public class TurnManager : MonoBehaviour
             {
                 // Si la comp�tence a �t� utilis�e pour la classe en cours, d�sactiver le bouton et mettre � jour le texte
                 btnUtiliseCompetence.interactable = false;
-                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Comp�tence utilis�e";
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Comp\u00E9tence utilis\u00E9e";
             }
             else
             {
                 // Sinon, activer le bouton et r�initialiser le texte par d�faut
                 btnUtiliseCompetence.interactable = true;
-                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Utiliser comp�tence"; // Mettez ici le texte que vous voulez par d�faut
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Utiliser comp\u00E9tence"; // Mettez ici le texte que vous voulez par défaut
+
             }
             // changer le text du bouton pour utiliser la comp�tence et le d�sactiver
             if (targetClassForTextChange == currentPlayerClass)
             {
-                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Comp�tence bloquer par l'assassin";
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Comp\u00E9tence bloqu\u00E9e par l'assassin";
                 targetClassForTextChange = null;
             }
 
@@ -379,12 +437,13 @@ public class TurnManager : MonoBehaviour
     {
         var currentPlayerInfo = SocketManager.Instance.playerInfos[currentPlayerIndex];
         string currentPlayerClass = currentPlayerInfo.playerClass;
-        Debug.Log(currentPlayerClass + " a utilis� sa comp�tence.");
+        Debug.Log(currentPlayerClass + " a utilis\u00E9 sa comp\u00E9tence.");
         skillUsed[currentPlayerClass] = true; // Mettre � jour le statut de la comp�tence comme utilis�e
         panelCompetence.SetActive(false); // Fermer le panneau de comp�tences
 
         btnUtiliseCompetence.interactable = false;
-        btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Comp�tence utilis�e";
+        btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Comp\u00E9tence utilis\u00E9e";
+
         competenceUtiliseePourClasse[currentPlayerClass] = true;
 
         // Si l'assassin accepte t'utiliser sa comp�tence
@@ -406,14 +465,14 @@ public class TurnManager : MonoBehaviour
             }
         }
         // si la sorci�re accepte d'utiliser sa comp�tence
-        if (currentPlayerClass == "Sorci�re")
+        if (currentPlayerClass == "Sorciere")
         {
 
             // Si c'est le cas, activez le panel Panel_competence_choix_joueur afin que le joueur choisit une cible
             panelCompetenceChoixJoueur.SetActive(true);
         }
         // si le d�moniste refuse d'utilis� sa comp�tence
-        if (currentPlayerClass == "D�moniste")
+        if (currentPlayerClass == "Demoniste")
         {
             panelCompetenceChoixJoueur.SetActive(true);
             tourCompetenceDemonisteUtilisee = completeTurnCount;
@@ -449,7 +508,7 @@ public class TurnManager : MonoBehaviour
     // si le joueur refuse d'utiliser sa comp�tence
     private void OnNoButtonClicked()
     {
-        Debug.Log("Comp�tence non utilis�e.");
+        Debug.Log("Comp\u00E9tence non utilis\u00E9e.");
 
         // Acc�dez � l'ID du joueur actuel en utilisant l'index 'currentPlayerIndex'
         var currentPlayerId = SocketManager.Instance.playerInfos[currentPlayerIndex].playerId;
@@ -533,18 +592,18 @@ public class TurnManager : MonoBehaviour
         // Votre logique reste similaire, mais vous devez adapter la r�cup�ration et l'action sur les classes
         switch (currentPlayerClass)
         {
-            case "Sorci�re":
-                Debug.Log("La sorci�re aper�oit le choix de quelqu'un");
+            case "Sorciere":
+                Debug.Log("La sorci\u00E8re aper\u00E7oit le choix de quelqu'un");
                 // Envoyer une commande au serveur pour la sorci�re
                 SocketManager.Instance.SendData("SorciereAction", "{}");
                 break;
-            case "D�moniste":
+            case "Demoniste":
                 if (selectedButtons.Count > 0)
                 {
                     string targetClass = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
                     // Envoyer une commande au serveur pour le d�moniste avec la classe cible
                     SocketManager.Instance.SendData("DemonisteAction", JsonUtility.ToJson(new { targetClass }));
-                    Debug.Log($"Le D�moniste � maudit la cible suivant: {targetClass}");
+                    Debug.Log($"Le D\u00E9moniste a maudit la cible suivante: {targetClass}");
                 }
                 break;
             case "Clerc":
@@ -562,7 +621,8 @@ public class TurnManager : MonoBehaviour
                     string targetClass = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
                     // Envoyer une commande au serveur pour le moine avec la classe cible
                     SocketManager.Instance.SendData("MoineAction", JsonUtility.ToJson(new { targetClass }));
-                    Debug.Log($"Le Moine a forc� la s�lection sur : {targetClass}");
+                    Debug.Log($"Le Moine a forc\u00E9 la s\u00E9lection sur : {targetClass}");
+
                 }
                 break;
             case "Assassin":
@@ -571,12 +631,13 @@ public class TurnManager : MonoBehaviour
                     string targetClass = selectedButtons[0].GetComponentInChildren<TextMeshProUGUI>().text;
                     // Envoyer une commande au serveur pour l'assassin avec la classe cible
                     SocketManager.Instance.SendData("AssassinAction", JsonUtility.ToJson(new { targetClass }));
-                    Debug.Log($"L'assassin a cibl� la classe: {targetClass}");
+                    Debug.Log($"L'assassin a cibl\u00E9 la classe: {targetClass}");
                 }
                 break;
         }
 
         // R�initialiser les boutons apr�s confirmation
+        ResetButtonSelection();
         ResetButtonSelection();
     }
 
@@ -626,7 +687,7 @@ public class TurnManager : MonoBehaviour
             if (targetPlayerInfo == currentPlayerIndex) // Si le joueur cibl� est le joueur actuel
             {
                 btnUtiliseCompetence.interactable = true;
-                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Utiliser comp�tence";
+                btnUtiliseCompetence.GetComponentInChildren<TMP_Text>().text = "Utiliser comp\u00E9tence";
             }
             turnsSinceAssassinSkillUsed = 0; // R�initialiser le compteur de tours depuis l'utilisation de la comp�tence
         }
