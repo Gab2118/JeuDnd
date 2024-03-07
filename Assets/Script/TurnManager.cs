@@ -86,10 +86,27 @@ public class TurnManager : MonoBehaviour
 
 
     // les déclaration pour tout ce qui est joueur is ready
-    public Toggle readyToggle;
+    public Button readyButton;
+
+
 
     public bool isReady = false;
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            
+            Debug.Log("Awake dans Turnmanager");
+           
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
@@ -101,6 +118,10 @@ public class TurnManager : MonoBehaviour
         // void start du panel_competence
         yesButton.onClick.AddListener(OnYesButtonClicked); // �couteur de clique du bouton oui
         noButton.onClick.AddListener(OnNoButtonClicked); // �couteur de clique du bouton non
+
+
+        // bouton ready
+        readyButton.onClick.AddListener(() => OnReadyButtonClicked());
 
         // void start du Panel_competence_choix_joueur
         btn_confirm_choix.onClick.AddListener(OnConfirmButtonClicked);
@@ -128,13 +149,8 @@ public class TurnManager : MonoBehaviour
             button.onClick.AddListener(() => OnChoiceButtonClicked(button));
         }
 
-        readyToggle.interactable = true;
 
-        if (readyToggle != null)
-        {
-            readyToggle.onValueChanged.AddListener(OnReadyToggleChanged);
-        }
-
+      
 
 
         // void start page jeu principal
@@ -157,48 +173,38 @@ public class TurnManager : MonoBehaviour
         // Désactivez le bouton pour le chef au début.
         if (SocketManager.Instance.IsPlayerChief(SocketManager.Instance.Socketid))
         {
-            nextTurnButton.interactable = false; // Désactive le bouton si le joueur actuel est le chef.
-            readyToggle.interactable = false;
+            // Si le joueur actuel est le chef, désactiver le bouton nextTurnButton
+
+            Debug.Log("désactiver par défaut le bouton ready");
+            readyButton.interactable = false;
+            nextTurnButton.interactable = false;
         }
         else
         {
-            nextTurnButton.interactable = true; // Assure que le bouton est activé pour les joueurs qui ne sont pas le chef.
-            readyToggle.interactable = true; // Active le "readyToggle".
+            // Sinon, s'assurer que le bouton est activé pour les joueurs qui ne sont pas le chef
+        
+            readyButton.interactable = true;
+            nextTurnButton.interactable = true;
         }
 
         // Continuez ici avec d'autres initialisations pour votre gestionnaire de tour.
     }
 
-    void OnReadyToggleChanged(bool isReadyState)
+    void OnReadyButtonClicked()
     {
-        isReady = isReadyState;
-        if (isReady == true)
+        isReady = !isReady; // Change l'état de prêt à chaque clic sur le bouton
+        if (isReady)
         {
-
             Debug.Log("Le joueur est prêt.");
-            readyToggle.interactable = false;
+            nextTurnButton.interactable = false;
+            readyButton.interactable = false; // Désactivation du bouton pour éviter des clics supplémentaires
         }
         else
         {
-          
-            Debug.Log("Le joueur n'est plus prêt.");
+            Debug.Log("Le joueur n'est plus prêt."); // Ce cas pourrait être géré différemment puisque un bouton ne bascule pas l'état normalement
         }
-
-
-            SocketManager.Instance.SendPlayerReadyState(isReady);
-
-    }
-
-    void OnToggleChanged(bool isReady)
-    {
-        Debug.Log($"Le toggle est maintenant {(isReady ? "actif" : "inactif")}");
-
-        // Envoyer l'état du toggle au serveur Node.js
         SocketManager.Instance.SendPlayerReadyState(isReady);
     }
-
-
-
     // initialiser les couleur pour chaque classe
     private void InitializeClassColors()
     {

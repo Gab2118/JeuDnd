@@ -19,6 +19,7 @@ public class PlayerChoiceHandler : MonoBehaviour
     private Dictionary<Button, bool> boutonsSelectionForces = new Dictionary<Button, bool>();
     private int toursDepuisModification = 0;
 
+
     void Start()
     {
         // Correction: Utilisation de SocketManager pour récupérer les noms des joueurs
@@ -140,15 +141,16 @@ public class PlayerChoiceHandler : MonoBehaviour
 
     void ActiverBoutonPourChef()
     {
-        // Désactive le bouton pour tous, sauf pour le chef, lors de la confirmation d'un choix.
-        // Remarque: Cela suppose que le bouton doit être désactivé après un choix confirmé.
-        if (!SocketManager.Instance.IsPlayerChief(SocketManager.Instance.Socketid))
-        {
-            TurnManager.Instance.nextTurnButton.interactable = true; // Désactive le bouton pour les joueurs qui ne sont pas le chef.
-            TurnManager.Instance.readyToggle.interactable = true;
-
-        }
-        // Pas besoin d'activer explicitement pour le chef ici, car cela a été géré initialement.
+      
+        
+            if (SocketManager.Instance.IsPlayerChief(SocketManager.Instance.Socketid))
+            {
+                Debug.Log("le bouton est réactiver");
+                TurnManager.Instance.nextTurnButton.interactable = true;
+                TurnManager.Instance.readyButton.interactable = true;
+                TurnManager.Instance.btnChoixChef.interactable = false;
+            }
+      
     }
 
 

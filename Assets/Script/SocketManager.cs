@@ -168,7 +168,9 @@ public class SocketManager : MonoBehaviour
     }
     public bool IsPlayerChief(string playerId)
     {
+        
         var player = playerInfos.Find(p => p.playerId == playerId);
+        Debug.Log(playerId);
         return player != null && player.isChief;
     }
 
