@@ -1,57 +1,59 @@
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
 {
-    // Rendez cette classe publique pour résoudre l'erreur CS0051
-    public class PlayerData
-    {
-        public string playerName;
-        public string playerClass;
-        public int avatarIndex; // Index pour l'avatar dans playerAvatars
+    public List<GameObject> playerImages;
+    public TMP_Text timerText;
+    private Coroutine countdownCoroutine;
 
-        public PlayerData(string name, string playerClass, int avatarIndex)
+    private void OnEnable()
+    {
+        SocketManager.OnLobbyUpdated += UpdateLobby;
+    }
+
+    private void OnDisable()
+    {
+        SocketManager.OnLobbyUpdated -= UpdateLobby;
+    }
+
+    public void UpdateLobby(int playerCount)
+    {
+        Debug.Log("Mise à jour du lobby avec " + playerCount + " joueurs");
+        for (int i = 0; i < playerImages.Count; i++)
         {
-            this.playerName = name;
-            this.playerClass = playerClass;
-            this.avatarIndex = avatarIndex;
+            playerImages[i].SetActive(i < playerCount);
+        }
+
+        if (playerCount == 2 && countdownCoroutine == null)  //CHANGER LES VALEURS SELON LE NOMBRE DE JOUEUR VISÉ
+        {
+            countdownCoroutine = StartCoroutine(StartCountdown(5));
+        }
+        else if (playerCount < 2 && countdownCoroutine != null) //CHANGER LES VALEURS SELON LE NOMBRE DE JOUEUR VISÉ
+        {
+            StopCoroutine(countdownCoroutine);
+            countdownCoroutine = null;
+            timerText.text = ""; // Reset le texte du timer
         }
     }
 
-    // Cette liste doit être mise à jour lorsque de nouveaux joueurs rejoignent ou quittent le lobby
-    private List<PlayerData> connectedPlayers = new List<PlayerData>();
-
-}
-
- /*   void Start()
+    private IEnumerator StartCountdown(int duration)
     {
-        // Initialise l'UI  UpdateLobbyUI();
-}
+        int timeLeft = duration;
+        timerText.gameObject.SetActive(true);
 
-public void UpdateLobbyUI()
-{
-   for (int i = 0; i < playerImages.Length; i++)
-   {
-       if (i < connectedPlayers.Count)
-       {
-           playerImages[i].gameObject.SetActive(true);
-           playerImages[i].sprite = playerAvatars[connectedPlayers[i].avatarIndex];
-           playerClassesTexts[i].text = connectedPlayers[i].playerClass;
-       }
-       else
-       {
-           playerImages[i].gameObject.SetActive(false);
-           playerClassesTexts[i].text = "";
-       }
-   }
-}
+        while (timeLeft > 0)
+        {
+            timerText.text = timeLeft.ToString();
+            yield return new WaitForSeconds(1);
+            timeLeft--;
+        }
 
-// Appelée lorsque de nouveaux joueurs rejoignent ou quittent
-public void OnPlayerListUpdated(List<PlayerData> updatedPlayers)
-{
-   connectedPlayers = updatedPlayers;
-   UpdateLobbyUI();
+        timerText.gameObject.SetActive(false);
+        SceneManager.LoadScene("scene_Select_classe");
+    }
 }
-}*/

@@ -164,7 +164,12 @@ namespace KyleDulce.SocketIo {
             }
         }
 
-        #if UNITY_WEBGL
+        internal void On(string v, Action<object> value)
+        {
+            throw new NotImplementedException();
+        }
+
+#if UNITY_WEBGL
             //external methods
             [DllImport("__Internal")]
             private static extern bool Socket_IsConnected(int id);
@@ -183,7 +188,7 @@ namespace KyleDulce.SocketIo {
 
             [DllImport("__Internal")]
             private static extern void Socket_Emit(int id, string ev, string data);
-        #endif
+#endif
 
     }
 }

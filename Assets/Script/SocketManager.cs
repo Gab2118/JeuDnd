@@ -10,7 +10,14 @@ public class SocketManager : MonoBehaviour
     public delegate void OnPlayerInfoUpdated(PlayerInfo playerInfo);
     public static OnPlayerInfoUpdated OnChefAssigned;
     public static OnPlayerInfoUpdated OnRoleAssigned;
+    public delegate void OnUpdateLobbyDelegate(int playerCount);
+    public static OnUpdateLobbyDelegate OnLobbyUpdated;
 
+    [System.Serializable]
+    public class LobbyInfo
+    {
+        public int playerCount;
+    }
 
 
 
@@ -84,7 +91,6 @@ public class SocketManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            ConnectToServer();
             Debug.Log("Awake dans SocketManager");
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
@@ -115,6 +121,7 @@ public class SocketManager : MonoBehaviour
             _socketid = msg;
             isConnected = true;
             Debug.Log("Connect� au serveur: " + msg);
+            _socket.emit("requestLobbyUpdate", "{}");
         });
 
 
@@ -147,6 +154,17 @@ public class SocketManager : MonoBehaviour
 
         _socket.on("chefAssigned", OnChefAssignedReceived);
         _socket.on("RoleAssigned", OnRoleAssignedReceived);
+        _socket.on("updateLobby", OnUpdateLobby);
+    }
+
+    void OnUpdateLobby(string data)
+    {
+        Debug.Log("Mise à jour du lobby reçue: " + data);
+
+        LobbyInfo lobbyInfo = JsonUtility.FromJson<LobbyInfo>(data.ToString());
+
+        OnLobbyUpdated?.Invoke(lobbyInfo.playerCount);
+
     }
 
     void OnRoleAssignedReceived(string data)
@@ -199,6 +217,8 @@ public class SocketManager : MonoBehaviour
             Debug.LogError("Pas de chef data deserialize");
         }
     }
+
+
     public PlayerInfo GetCurrentPlayerInfo(string playerId)
     {
         return playerInfos.Find(player => player.playerId == playerId);
@@ -220,6 +240,12 @@ public class SocketManager : MonoBehaviour
         else if (scene.name == "Scene_choix_role")
         {
             OnRoleAssigned?.Invoke(GetCurrentPlayerInfo(_socketid));
+        }
+        if (scene.name == "scene_Lobby")
+        {
+            ConnectToServer();
+            Debug.Log("Awake dans SocketManager");
+
         }
     }
 
